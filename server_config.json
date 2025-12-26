@@ -100,6 +100,13 @@
             "error": "규칙 내용이 잘못되었습니다. 문장 부호, 공백, 계산을 확인하고 영어로 입력되었는지 확인하세요.",
             "hint": "\n\n*(규칙 목록에 표시된 대로 정확히 복사하여 붙여넣으세요. 영어로 되어 있어야 합니다)*"
         },
+        "rs": {
+            "label": "Serbian 🇷🇸 (by mimaexplorer9783)",
+            "style": "secondary",
+            "message": "Dobrodosli! Da biste postali clan naseg servera, molimo vas ukucajte pravilo **{equation}**. Kada udjete u server, molimo vas da komunicirate iskljucivo na engleskom, hvala!",
+            "error": "Greska! Molimo proverite da li ste promasili neki interpunkcijski znak, da li ste dobro izracunali i da li ste pisali na engleskom.",
+            "hint": "\n\n*(kopirajte i nalepite pravilo sa spiska pravila koji je na engleskom)*"
+        },
         "ar": {
             "label": "العربية 🇸🇦",
             "style": "secondary",
