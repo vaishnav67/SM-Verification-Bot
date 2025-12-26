@@ -23,13 +23,6 @@
             "error": "Incorrect rule text. Please check punctuation, spaces, and the calculated number and make sure it is in English.",
             "hint": "\n\n*(Copy and paste the rule text exactly as shown in the rules list which should also be in English)*"
         },
-        "es": {
-            "label": "Español 🇪🇸",
-            "style": "secondary",
-            "message": "¡Bienvenido! ¿Puedes escribir el texto de la regla n.º **{equation}** para entrar? Este servidor es solo en inglés, así que una vez dentro, usa solo inglés. ¡Gracias!",
-            "error": "Texto de regla incorrecto. Verifica la puntuación, los espacios y el número calculado, y asegúrate de que esté en inglés.",
-            "hint": "\n\n*(Copia y pega el texto de la regla exactamente como aparece en la lista, el cual debe estar en inglés)*"
-        },
         "fr": {
             "label": "Français 🇫🇷 (by seig852, nagi)",
             "style": "secondary",
@@ -72,6 +65,34 @@
             "error": "Texto da regra incorreto. Verifique pontuação, espaços, o cálculo e certifique-se de que está em inglês.",
             "hint": "\n\n*(Copie e cole o texto da regra exatamente como mostrado na lista, que deve estar em inglês)*"
         },
+        "rs": {
+            "label": "Serbian 🇷🇸 (by mimaexplorer9783)",
+            "style": "secondary",
+            "message": "Dobrodosli! Da biste postali clan naseg servera, molimo vas ukucajte pravilo **{equation}**. Kada udjete u server, molimo vas da komunicirate iskljucivo na engleskom, hvala!",
+            "error": "Greska! Molimo proverite da li ste promasili neki interpunkcijski znak, da li ste dobro izracunali i da li ste pisali na engleskom.",
+            "hint": "\n\n*(kopirajte i nalepite pravilo sa spiska pravila koji je na engleskom)*"
+        },
+        "id": {
+            "label": "Bahasa Indonesia 🇮🇩 (by renjuvenated)",
+            "style": "secondary",
+            "message": "Selamat Datang! Apakah anda bisa mengetik aturan no. **{equation}** untuk masuk? Server ini khusus bahasa Inggris, maka setelah masuk, harap gunakan bahasa Inggris saja. Terima Kasih!",
+            "error": "Teks aturan salah. Mohon periksa kembali penulisan tanda baca, spasi, dan jumlah hasil hitungan, dan pastikan jawabannya dalam bahasa Inggris!",
+            "hint": "\n\n*(Salin dan tempel teks aturan sama persis seperti yang ditampilkan di daftar peraturan yang juga harus ditulis dalam bahasa Inggris.)*"
+        },
+        "vi": {
+            "label": "Việt Nam 🇻🇳 (by drainbow264)",
+            "style": "secondary",
+            "message": "Chào mừng! Bạn có thể nhập nội dung của quy tắc số.... **{equation}** để được vào? Đây là máy chủ chỉ được sử dụng tiếng Anh. Khi bạn vào được máy chủ, vui lòng chỉ sử dụng tiếng Anh, cảm ơn bạn!",
+            "error": "Văn bản quy tắc này chưa chính xác. Vui lòng kiểm tra lại dấu câu, khoảng cách và số đã được tính toán, đảm bảo rằng nó được viết bằng tiếng Anh.",
+            "hint": "\n\n*(Sao chép và dán văn bản quy tắc chính xác như trong danh sách quy tắc (cũng phải bằng tiếng Anh).*"
+        },
+        "es": {
+            "label": "Español 🇪🇸",
+            "style": "secondary",
+            "message": "¡Bienvenido! ¿Puedes escribir el texto de la regla n.º **{equation}** para entrar? Este servidor es solo en inglés, así que una vez dentro, usa solo inglés. ¡Gracias!",
+            "error": "Texto de regla incorrecto. Verifica la puntuación, los espacios y el número calculado, y asegúrate de que esté en inglés.",
+            "hint": "\n\n*(Copia y pega el texto de la regla exactamente como aparece en la lista, el cual debe estar en inglés)*"
+        },
         "it": {
             "label": "Italiano 🇮🇹",
             "style": "secondary",
@@ -100,26 +121,12 @@
             "error": "규칙 내용이 잘못되었습니다. 문장 부호, 공백, 계산을 확인하고 영어로 입력되었는지 확인하세요.",
             "hint": "\n\n*(규칙 목록에 표시된 대로 정확히 복사하여 붙여넣으세요. 영어로 되어 있어야 합니다)*"
         },
-        "rs": {
-            "label": "Serbian 🇷🇸 (by mimaexplorer9783)",
-            "style": "secondary",
-            "message": "Dobrodosli! Da biste postali clan naseg servera, molimo vas ukucajte pravilo **{equation}**. Kada udjete u server, molimo vas da komunicirate iskljucivo na engleskom, hvala!",
-            "error": "Greska! Molimo proverite da li ste promasili neki interpunkcijski znak, da li ste dobro izracunali i da li ste pisali na engleskom.",
-            "hint": "\n\n*(kopirajte i nalepite pravilo sa spiska pravila koji je na engleskom)*"
-        },
         "ar": {
             "label": "العربية 🇸🇦",
             "style": "secondary",
             "message": "مرحبًا بك! هل يمكنك كتابة نص القاعدة رقم **{equation}** للدخول؟ هذا خادم باللغة الإنجليزية فقط، لذا بمجرد الدخول، التزم بالإنجليزية فقط، شكرًا!",
             "error": "نص القاعدة غير صحيح. يرجى التحقق من الترقيم والمسافات والحساب والتأكد من أنها باللغة الإنجليزية.",
             "hint": "\n\n*(انسخ والصق نص القاعدة تمامًا كما هو موضح في القائمة والذي يجب أن يكون باللغة الإنجليزية)*"
-        },
-        "id": {
-            "label": "Bahasa Indonesia 🇮🇩 (by renjuvenated)",
-            "style": "secondary",
-            "message": "Selamat Datang! Apakah anda bisa mengetik aturan no. **{equation}** untuk masuk? Server ini khusus bahasa Inggris, maka setelah masuk, harap gunakan bahasa Inggris saja. Terima Kasih!",
-            "error": "Teks aturan salah. Mohon periksa kembali penulisan tanda baca, spasi, dan jumlah hasil hitungan, dan pastikan jawabannya dalam bahasa Inggris!",
-            "hint": "\n\n*(Salin dan tempel teks aturan sama persis seperti yang ditampilkan di daftar peraturan yang juga harus ditulis dalam bahasa Inggris.)*"
         },
         "ms": {
             "label": "Bahasa Melayu 🇲🇾",
@@ -148,13 +155,6 @@
             "message": "Hoş geldiniz! Giriş yapmak için **{equation}** numaralı kuralın metnini yazar mısınız? Burası sadece İngilizce bir sunucudur, bu yüzden girdikten sonra lütfen sadece İngilizce konuşun, teşekkürler!",
             "error": "Hatalı kural metni. Lütfen noktalama işaretlerini, boşlukları, hesaplamayı kontrol edin ve İngilizce olduğundan emin olun.",
             "hint": "\n\n*(Kural metnini, kural listesinde gösterildiği gibi -İngilizce olarak- aynen kopyalayıp yapıştırın)*"
-        },
-        "vi": {
-            "label": "Tiếng Việt 🇻🇳",
-            "style": "secondary",
-            "message": "Chào mừng! Bạn có thể nhập nội dung quy tắc số **{equation}** để vào không? Đây là máy chủ chỉ dùng tiếng Anh, vì vậy khi vào, vui lòng chỉ sử dụng tiếng Anh, cảm ơn!",
-            "error": "Nội dung quy tắc không chính xác. Vui lòng kiểm tra dấu câu, khoảng cách, tính toán và đảm bảo nó bằng tiếng Anh.",
-            "hint": "\n\n*(Sao chép và dán nội dung quy tắc chính xác như hiển thị trong danh sách, nội dung này cũng phải bằng tiếng Anh)*"
         },
         "th": {
             "label": "ไทย 🇹🇭",
