@@ -38,7 +38,7 @@
             "hint": "\n\n*(Copie et colle le texte de la règle exactement comme indiqué dans la liste, qui doit être en anglais)*"
         },
         "de": {
-            "label": "Deutsch 🇩🇪",
+            "label": "Deutsch 🇩🇪 (by aurion_94)",
             "style": "secondary",
             "message": "Willkommen! Kannst du den Text der Regel Nr. **{equation}** eingeben, um Eintritt zu erhalten? Dies ist ein reiner Englisch-Server, also bleib bitte nach dem Eintritt ausschließlich bei Englisch, danke!",
             "error": "Falscher Regeltext. Bitte überprüfe Zeichensetzung, Leerzeichen und die berechnete Zahl und stelle sicher, dass er auf Englisch ist.",
@@ -66,7 +66,7 @@
             "hint": "\n\n*(Copie e cole o texto da regra exatamente como mostrado na lista, que deve estar em inglês)*"
         },
         "pt": {
-            "label": "Português 🇵🇹",
+            "label": "Português 🇵🇹 (by the_harpocrates)",
             "style": "secondary",
             "message": "Bem-vindo! Pode digitar o texto da regra nº **{equation}** para entrar? Este servidor é apenas em inglês, então, ao entrar, use apenas inglês. Obrigado!",
             "error": "Texto da regra incorreto. Verifique pontuação, espaços, o cálculo e certifique-se de que está em inglês.",
