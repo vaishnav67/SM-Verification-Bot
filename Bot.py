@@ -339,10 +339,9 @@ async def on_message(message):
             else:
                 await message.channel.send("Error: Role deleted.")
         else:
-            if message.content.strip().startswith(":rule"):
-                lang_data = LANGUAGES_CONFIG.get(lang_code, LANGUAGES_CONFIG['en'])
-                error_msg = lang_data.get("error", "Incorrect rule text.")
-                await message.channel.send(error_msg)
+            lang_data = LANGUAGES_CONFIG.get(lang_code, LANGUAGES_CONFIG['en'])
+            error_msg = lang_data.get("error", "Incorrect rule text.")
+            await message.channel.send(error_msg)
 
     await bot.process_commands(message)
 
