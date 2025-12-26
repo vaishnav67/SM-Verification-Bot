@@ -115,9 +115,10 @@ class LanguageSelect(discord.ui.Select):
 
 class LanguageView(discord.ui.View):
     def __init__(self, log_msg_id=None):
-        super().__init__(timeout=60)
+        # CHANGED: Increased timeout from 60 to 300 seconds (5 minutes)
+        super().__init__(timeout=300) 
         self.log_msg_id = log_msg_id
-        self.message = None # Reference to the message containing this view
+        self.message = None 
         self.create_dropdowns()
 
     def create_dropdowns(self):
@@ -134,14 +135,11 @@ class LanguageView(discord.ui.View):
             self.add_item(select_menu)
 
     async def on_timeout(self):
-        """Called when the view times out (60s). Cleans up the message."""
+        # This deletes the message if the user doesn't select anything for 5 minutes
         if self.message:
             try:
                 await self.message.delete()
-            except discord.NotFound:
-                pass
-            except discord.HTTPException:
-                pass
+            except: pass
 
     async def send_challenge(self, interaction: discord.Interaction, lang_code: str):
         equation_str, answer_num = generate_complicated_math()
@@ -162,14 +160,13 @@ class LanguageView(discord.ui.View):
             
             message_text = msg_template.format(equation=equation_str)
             
-            # 1. Send the hidden (ephemeral) challenge
+            # Send Hidden Math Problem
             await interaction.response.send_message(message_text + hint_template, ephemeral=True)
             
-            # 2. DELETE the public dropdown message immediately
+            # Delete Dropdown Menu immediately after selection
             try:
                 await interaction.message.delete()
-            except:
-                pass
+            except: pass
         else:
             await interaction.response.send_message("System Error: Rule config missing.", ephemeral=True)
 
@@ -197,19 +194,16 @@ async def cleanup_pending():
         if guild_id:
             g_settings = config_data.get('guild_settings', {}).get(str(guild_id), {})
             channel_id = g_settings.get('channel_id')
-            
             if channel_id:
                 channel = bot.get_channel(channel_id)
                 if channel:
                     try:
                         user = await bot.fetch_user(user_id)
                         await channel.send(
-                            f"⏰ {user.mention}, your verification session timed out due to inactivity.\n"
-                            "Please type **'I have read the rules'** to start again.",
+                            f"⏰ {user.mention}, verification timed out. Type **'I have read the rules'** to retry.",
                             delete_after=30
                         )
                     except: pass
-
         del pending_verifications[user_id]
     
     if to_remove:
@@ -235,8 +229,7 @@ def save_config():
 @bot.tree.command(name="reload", description="Reloads config file.")
 @app_commands.default_permissions(administrator=True)
 async def reload(interaction: discord.Interaction):
-    success = load_config()
-    if success:
+    if load_config():
         await interaction.response.send_message(f"✅ Configuration Reloaded!", ephemeral=True)
     else:
         await interaction.response.send_message("❌ Reload Failed.", ephemeral=True)
@@ -323,8 +316,11 @@ async def on_message(message):
     # 1. TRIGGER
     if VERIFY_PATTERN.fullmatch(message.content.strip()):
         if not allowed_channel_id or message.channel.id != allowed_channel_id: return
-        try: await message.delete()
-        except: pass
+        
+        try:
+            await message.delete()
+        except Exception as e:
+            print(f"⚠️ Failed to delete trigger message: {e}")
 
         age_delta = datetime.now(timezone.utc) - message.author.created_at
         if age_delta.days < MIN_AGE:
@@ -347,7 +343,6 @@ async def on_message(message):
                 except: pass
 
         view = LanguageView(log_msg_id)
-        # Send the Prompt and store the message object in the view
         prompt_msg = await message.channel.send(f"Hello {message.author.mention}, please select your language:", view=view)
         view.message = prompt_msg
         return
@@ -355,15 +350,17 @@ async def on_message(message):
     # 2. ANSWER CHECK
     if message.author.id in pending_verifications:
         if not allowed_channel_id or message.channel.id != allowed_channel_id: return
-        try: await message.delete()
-        except: pass
+        
+        try:
+            await message.delete()
+        except Exception as e:
+            print(f"⚠️ Failed to delete answer message: {e}")
 
         user_data = pending_verifications[message.author.id]
         expected_text = user_data["answer"]
         lang_code = user_data["lang"]
         stored_log_id = user_data.get("log_msg_id")
         
-        # FUZZY MATCH
         if normalize_text(message.content) == normalize_text(expected_text):
             if not verified_role_id:
                 await message.channel.send("⚠️ Error: Role not set.", delete_after=10)
@@ -373,6 +370,7 @@ async def on_message(message):
             if role:
                 try:
                     await message.author.add_roles(role)
+                    # Temp success msg
                     await message.channel.send(f"✅ {message.author.mention} has been verified.", delete_after=5)
                     
                     welcome_msg = f"Welcome to the server, {message.author.mention}! Please remember: **English Only**."
@@ -399,7 +397,6 @@ async def on_message(message):
         else:
             lang_data = LANGUAGES_CONFIG.get(lang_code, LANGUAGES_CONFIG['en'])
             error_msg = lang_data.get("error", "Incorrect rule text.")
-            
             await message.channel.send(
                 f"❌ {message.author.mention} {error_msg}\n*(Check punctuation and ensure it is English)*", 
                 delete_after=30
