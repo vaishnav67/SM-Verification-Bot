@@ -53,7 +53,6 @@ if not load_config():
     sys.exit(1)
 
 # Data Storage
-# Structure: {user_id: {"answer": str, "lang": str, "log_msg_id": int, "timestamp": datetime, "guild_id": int}}
 pending_verifications = {}
 
 # Regex
@@ -118,6 +117,7 @@ class LanguageView(discord.ui.View):
     def __init__(self, log_msg_id=None):
         super().__init__(timeout=60)
         self.log_msg_id = log_msg_id
+        self.message = None # Reference to the message containing this view
         self.create_dropdowns()
 
     def create_dropdowns(self):
@@ -133,6 +133,16 @@ class LanguageView(discord.ui.View):
             select_menu = LanguageSelect(self, chunk, index + 1)
             self.add_item(select_menu)
 
+    async def on_timeout(self):
+        """Called when the view times out (60s). Cleans up the message."""
+        if self.message:
+            try:
+                await self.message.delete()
+            except discord.NotFound:
+                pass
+            except discord.HTTPException:
+                pass
+
     async def send_challenge(self, interaction: discord.Interaction, lang_code: str):
         equation_str, answer_num = generate_complicated_math()
         
@@ -143,7 +153,7 @@ class LanguageView(discord.ui.View):
                 "lang": lang_code,
                 "log_msg_id": self.log_msg_id,
                 "timestamp": datetime.now(),
-                "guild_id": interaction.guild_id  # Save guild ID for the timeout notifier
+                "guild_id": interaction.guild_id
             }
             
             lang_data = LANGUAGES_CONFIG.get(lang_code, {})
@@ -152,7 +162,14 @@ class LanguageView(discord.ui.View):
             
             message_text = msg_template.format(equation=equation_str)
             
+            # 1. Send the hidden (ephemeral) challenge
             await interaction.response.send_message(message_text + hint_template, ephemeral=True)
+            
+            # 2. DELETE the public dropdown message immediately
+            try:
+                await interaction.message.delete()
+            except:
+                pass
         else:
             await interaction.response.send_message("System Error: Rule config missing.", ephemeral=True)
 
@@ -163,23 +180,19 @@ intents.members = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# --- BACKGROUND TASK: TIMEOUT NOTIFIER ---
+# --- BACKGROUND TASK ---
 
-@tasks.loop(minutes=5) # Check every 5 minutes
+@tasks.loop(minutes=5)
 async def cleanup_pending():
-    # Removes verification requests older than 1 hour and notifies user
     now = datetime.now()
     to_remove = []
     
-    # Identify expired users
     for user_id, data in pending_verifications.items():
         if "timestamp" in data:
-            if (now - data["timestamp"]).total_seconds() > 3600: # 1 hour timeout
+            if (now - data["timestamp"]).total_seconds() > 3600:
                 to_remove.append((user_id, data))
     
-    # Notify and remove
     for user_id, data in to_remove:
-        # Try to find the guild and channel to notify them
         guild_id = data.get("guild_id")
         if guild_id:
             g_settings = config_data.get('guild_settings', {}).get(str(guild_id), {})
@@ -189,17 +202,14 @@ async def cleanup_pending():
                 channel = bot.get_channel(channel_id)
                 if channel:
                     try:
-                        # Ping the user
                         user = await bot.fetch_user(user_id)
                         await channel.send(
                             f"⏰ {user.mention}, your verification session timed out due to inactivity.\n"
                             "Please type **'I have read the rules'** to start again.",
-                            delete_after=30 # Keep notification for 30s
+                            delete_after=30
                         )
-                    except Exception as e:
-                        print(f"Could not notify user {user_id}: {e}")
+                    except: pass
 
-        # Remove from memory
         del pending_verifications[user_id]
     
     if to_remove:
@@ -336,7 +346,10 @@ async def on_message(message):
                     log_msg_id = log_msg.id
                 except: pass
 
-        await message.channel.send(f"Hello {message.author.mention}, please select your language:", view=LanguageView(log_msg_id))
+        view = LanguageView(log_msg_id)
+        # Send the Prompt and store the message object in the view
+        prompt_msg = await message.channel.send(f"Hello {message.author.mention}, please select your language:", view=view)
+        view.message = prompt_msg
         return
 
     # 2. ANSWER CHECK
@@ -384,7 +397,6 @@ async def on_message(message):
             else:
                 await message.channel.send("Error: Role deleted.", delete_after=10)
         else:
-            # ERROR MESSAGE (UPDATED: 30s timeout + Ping)
             lang_data = LANGUAGES_CONFIG.get(lang_code, LANGUAGES_CONFIG['en'])
             error_msg = lang_data.get("error", "Incorrect rule text.")
             

@@ -40,9 +40,9 @@
         "de": {
             "label": "Deutsch 🇩🇪",
             "style": "secondary",
-            "message": "Willkommen! Bitte tippe den Text von Regel Nr. **{equation}**, um Zugang zu erhalten. Dies ist ein reiner Englisch-Server, also bleibe nach dem Beitritt bitte beim Englischen. Danke!",
-            "error": "Falscher Regeltext. Bitte prüfe Zeichensetzung, Leerzeichen, die Berechnung und stelle sicher, dass es auf Englisch ist.",
-            "hint": "\n\n*(Kopiere den Regeltext exakt wie in der Liste angezeigt; er muss auf Englisch sein)*"
+            "message": "Willkommen! Kannst du den Text der Regel Nr. **{equation}** eingeben, um Eintritt zu erhalten? Dies ist ein reiner Englisch-Server, also bleib bitte nach dem Eintritt ausschließlich bei Englisch, danke!",
+            "error": "Falscher Regeltext. Bitte überprüfe Zeichensetzung, Leerzeichen und die berechnete Zahl und stelle sicher, dass er auf Englisch ist.",
+            "hint": "\n\n*(Kopiere und füge den Regeltext exakt so ein, wie er in der Regelnliste steht, die ebenfalls auf Englisch sein sollte)*"
         },
 	"tl": {
             "label": "Filipino 🇵🇭",
