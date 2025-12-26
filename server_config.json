@@ -31,11 +31,11 @@
             "hint": "\n\n*(Copia y pega el texto de la regla exactamente como aparece en la lista, el cual debe estar en inglés)*"
         },
         "fr": {
-            "label": "Français 🇫🇷",
+            "label": "Français 🇫🇷 (by seig852)",
             "style": "secondary",
-            "message": "Bienvenue ! Pouvez-vous taper le texte de la règle n° **{equation}** pour entrer ? Ce serveur est uniquement en anglais, donc une fois entré, restez en anglais, merci !",
-            "error": "Texte de règle incorrect. Vérifiez la ponctuation, les espaces, le calcul et assurez-vous que c'est en anglais.",
-            "hint": "\n\n*(Copiez et collez le texte de la règle exactement comme indiqué dans la liste, qui doit être en anglais)*"
+            "message": "Bienvenue ! Peux tu me dire quelle est le texte de la règle n° **{equation}** pour entrer ? Ce serveur est uniquement en englais, donc une fois dedans, parle en anglais, merci !",
+            "error": "Texte de la règle incorrect, Vérifie la ponctuation, les espaces, le calcul et assures toi que c'est en anglais.",
+            "hint": "\n\n*(Copie et colle le texte de la règle exactement comme indiqué dans la liste, qui doit être en anglais)*"
         },
         "de": {
             "label": "Deutsch 🇩🇪",
@@ -44,11 +44,11 @@
             "error": "Falscher Regeltext. Bitte überprüfe Zeichensetzung, Leerzeichen und die berechnete Zahl und stelle sicher, dass er auf Englisch ist.",
             "hint": "\n\n*(Kopiere und füge den Regeltext exakt so ein, wie er in der Regelnliste steht, die ebenfalls auf Englisch sein sollte)*"
         },
-	"tl": {
-            "label": "Filipino 🇵🇭",
+	    "tl": {
+            "label": "Filipino 🇵🇭 (by exoduswalker_)",
             "style": "secondary",
-            "message": "Maligayang pagdating! Maaari mo bang i-type ang teksto ng rule no. **{equation}** para makapasok? English-only ang server na ito kaya kapag nakapasok ka na, pakiusap na English lang ang gamitin. Salamat!",
-            "error": "Mali ang teksto ng rule. Pakisuri ang bantas (punctuation), mga espasyo, at ang kinalkula na numero. Siguraduhin ding nasa English ito.",
+            "message": "Maligayang pagdating! Maaari mo bang i-type ang teksto ng rule no. **{equation}** upang makapasok? Ingles lamang ang maaring gamitin sa server na ito, kaya kapag nakapasok ka na ay pakiusap na Ingles lang ang iyong gamiting wika. Salamat!",
+            "error": "Mali ang teksto ng rule. Pakisuri ang bantas (punctuation), mga espasyo, at ang kinalkula na numero. Siguraduhin ding ito ay nakasulat sa Ingles.",
             "hint": "\n\n*(Kopyahin at i-paste ang teksto ng rule nang eksakto kung paano ito ipinapakita sa listahan, na dapat ay nasa English din)*"
         },
         "ru": {
@@ -57,6 +57,13 @@
             "message": "Добро пожаловать! Напишите текст правила № **{equation}** для входа. Это англоязычный сервер, поэтому после входа пишите только на английском, спасибо!",
             "error": "Неверный текст правила. Проверьте пунктуацию, пробелы, расчет и убедитесь, что текст на английском.",
             "hint": "\n\n*(Скопируйте и вставьте текст правила в точности как в списке; он должен быть на английском)*"
+        },
+        "bz": {
+            "label": "Português 🇧🇷 (by Cta_warrior)",
+            "style": "secondary",
+            "message": "Bem-vindo! Pra entrar, é só digitar o texto da regra nº **{equation}**. Esse servidor é focado em inglês, então use apenas esse idioma por aqui, beleza? Valeu!",
+            "error": "Texto da regra incorreto. Verifique pontuação, espaços, o cálculo e certifique-se de que está em inglês.",
+            "hint": "\n\n*(Copie e cole o texto da regra exatamente como mostrado na lista, que deve estar em inglês)*"
         },
         "pt": {
             "label": "Português 🇵🇹",
