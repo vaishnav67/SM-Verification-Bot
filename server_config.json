@@ -31,9 +31,9 @@
             "hint": "\n\n*(Copia y pega el texto de la regla exactamente como aparece en la lista, el cual debe estar en inglés)*"
         },
         "fr": {
-            "label": "Français 🇫🇷 (by seig852)",
+            "label": "Français 🇫🇷 (by seig852, nagi)",
             "style": "secondary",
-            "message": "Bienvenue ! Peux tu me dire quelle est le texte de la règle n° **{equation}** pour entrer ? Ce serveur est uniquement en englais, donc une fois dedans, parle en anglais, merci !",
+            "message": "Bienvenue ! Peux tu me dire quel est le texte de la règle n° **{equation}** pour entrer ? Ce serveur est uniquement en anglais, donc une fois dedans, parle en anglais, merci !",
             "error": "Texte de la règle incorrect, Vérifie la ponctuation, les espaces, le calcul et assures toi que c'est en anglais.",
             "hint": "\n\n*(Copie et colle le texte de la règle exactement comme indiqué dans la liste, qui doit être en anglais)*"
         },
@@ -52,11 +52,11 @@
             "hint": "\n\n*(Kopyahin at i-paste ang teksto ng rule nang eksakto kung paano ito ipinapakita sa listahan, na dapat ay nasa English din)*"
         },
         "ru": {
-            "label": "Русский 🇷🇺 (by retrocore_himself)",
+            "label": "Русский 🇷🇺 (by retrocore_himself, K2 Media Group | https://k2mg.net/)",
             "style": "secondary",
-            "message": "Добро пожаловать! Вы можете написать правило номер **{equation}** чтобы войти? На этом сервере говорят только на английском языке, поэтому, когда вы войдёте, придерживайтесь только английского языка, спасибо!",
-            "error": "Неверное содержание правила. Пожалуйста, проверьте пунктуацию, пробелы, число правила и то, что вы написали на английском языке.",
-            "hint": "\n\n*(Скопируйте и вставьте содержание правила именно как написано в перечне правил, которое так-же должно быть на английском языке.)*"
+            "message": "Добро пожаловать! Сможешь написать текст правила под номером **{equation}**, чтобы авторизоваться? Здесь общаются только на английском языке, поэтому как только пройдёшь дальше, пиши только на английском. Спасибо!",
+            "error": "Текст правила написан неправильно. Пожалуйста, проверь пунктуацию, пробелы, номер правила и что ответ на английском языке.",
+            "hint": "\n\n*(Скопируйте и вставьте текст правила именно как он написан в списке правил. Он также должен быть на английском)*"
         },
         "bz": {
             "label": "Português 🇧🇷 (by Cta_warrior)",
@@ -115,11 +115,11 @@
             "hint": "\n\n*(انسخ والصق نص القاعدة تمامًا كما هو موضح في القائمة والذي يجب أن يكون باللغة الإنجليزية)*"
         },
         "id": {
-            "label": "Bahasa Indonesia 🇮🇩",
+            "label": "Bahasa Indonesia 🇮🇩 (by renjuvenated)",
             "style": "secondary",
-            "message": "Selamat datang! Bisakah Anda mengetik teks aturan no. **{equation}** untuk masuk? Server ini hanya bahasa Inggris, jadi setelah masuk, harap gunakan bahasa Inggris saja. Terima kasih!",
-            "error": "Teks aturan salah. Periksa tanda baca, spasi, hasil hitungan, dan pastikan dalam bahasa Inggris.",
-            "hint": "\n\n*(Salin dan tempel teks aturan persis seperti yang ditampilkan di daftar yang juga harus dalam bahasa Inggris)*"
+            "message": "Selamat Datang! Apakah anda bisa mengetik aturan no. **{equation}** untuk masuk? Server ini khusus bahasa Inggris, maka setelah masuk, harap gunakan bahasa Inggris saja. Terima Kasih!",
+            "error": "Teks aturan salah. Mohon periksa kembali penulisan tanda baca, spasi, dan jumlah hasil hitungan, dan pastikan jawabannya dalam bahasa Inggris!",
+            "hint": "\n\n*(Salin dan tempel teks aturan sama persis seperti yang ditampilkan di daftar peraturan yang juga harus ditulis dalam bahasa Inggris.)*"
         },
         "ms": {
             "label": "Bahasa Melayu 🇲🇾",
