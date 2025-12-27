@@ -66,6 +66,10 @@ def normalize_text(text):
     text = re.sub(r'\s+', ' ', text).strip()
     return text
 
+def get_lang_label(code):
+    """Returns the pretty label (e.g. English 🇺🇸) for a code."""
+    return LANGUAGES_CONFIG.get(code, {}).get("label", code)
+
 def generate_complicated_math():
     if not RULES: return "1 + 0", 1 
     rule_keys = [int(k) for k in RULES.keys() if k.isdigit()]
@@ -115,8 +119,7 @@ class LanguageSelect(discord.ui.Select):
 
 class LanguageView(discord.ui.View):
     def __init__(self, log_msg_id=None):
-        # CHANGED: Increased timeout from 60 to 300 seconds (5 minutes)
-        super().__init__(timeout=300) 
+        super().__init__(timeout=300) # 5 Minutes UI Timeout
         self.log_msg_id = log_msg_id
         self.message = None 
         self.create_dropdowns()
@@ -135,7 +138,6 @@ class LanguageView(discord.ui.View):
             self.add_item(select_menu)
 
     async def on_timeout(self):
-        # This deletes the message if the user doesn't select anything for 5 minutes
         if self.message:
             try:
                 await self.message.delete()
@@ -146,24 +148,45 @@ class LanguageView(discord.ui.View):
         
         rule_key = str(answer_num)
         if rule_key in RULES:
-            pending_verifications[interaction.user.id] = {
-                "answer": RULES[rule_key],
-                "lang": lang_code,
-                "log_msg_id": self.log_msg_id,
-                "timestamp": datetime.now(),
-                "guild_id": interaction.guild_id
-            }
+            # UPDATE existing entry
+            if interaction.user.id in pending_verifications:
+                pending_verifications[interaction.user.id].update({
+                    "answer": RULES[rule_key],
+                    "lang": lang_code,
+                    "timestamp": datetime.now() 
+                })
+            else:
+                # Fallback if entry missing
+                pending_verifications[interaction.user.id] = {
+                    "answer": RULES[rule_key],
+                    "lang": lang_code,
+                    "log_msg_id": self.log_msg_id,
+                    "timestamp": datetime.now(),
+                    "guild_id": interaction.guild_id
+                }
             
+            # --- UPDATE STAFF LOG TO SHOW LANGUAGE SELECTION ---
+            if self.log_msg_id:
+                gid = str(interaction.guild_id)
+                g_settings = config_data.get('guild_settings', {}).get(gid, {})
+                log_channel_id = g_settings.get('log_channel_id')
+                if log_channel_id:
+                    chan = interaction.guild.get_channel(log_channel_id)
+                    if chan:
+                        try:
+                            msg = await chan.fetch_message(self.log_msg_id)
+                            lang_label = get_lang_label(lang_code)
+                            await msg.edit(content=f"⏳ {interaction.user.mention} is verifying in **{lang_label}**...")
+                        except: pass
+            # ---------------------------------------------------
+
             lang_data = LANGUAGES_CONFIG.get(lang_code, {})
             msg_template = lang_data.get("message", "Error: Message missing.")
             hint_template = lang_data.get("hint", "\n\n*(Copy and paste the rule text)*")
             
             message_text = msg_template.format(equation=equation_str)
             
-            # Send Hidden Math Problem
             await interaction.response.send_message(message_text + hint_template, ephemeral=True)
-            
-            # Delete Dropdown Menu immediately after selection
             try:
                 await interaction.message.delete()
             except: pass
@@ -177,23 +200,31 @@ intents.members = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# --- BACKGROUND TASK ---
+# --- BACKGROUND TASK (CLEANUP) ---
 
-@tasks.loop(minutes=5)
+@tasks.loop(minutes=1) 
 async def cleanup_pending():
     now = datetime.now()
     to_remove = []
     
+    # 1. Identify expired users (> 6 mins)
     for user_id, data in pending_verifications.items():
         if "timestamp" in data:
-            if (now - data["timestamp"]).total_seconds() > 3600:
+            if (now - data["timestamp"]).total_seconds() > 360:
                 to_remove.append((user_id, data))
     
+    # 2. Process removals
     for user_id, data in to_remove:
         guild_id = data.get("guild_id")
+        log_msg_id = data.get("log_msg_id")
+        lang_code = data.get("lang") # Get the language they were using
+
         if guild_id:
             g_settings = config_data.get('guild_settings', {}).get(str(guild_id), {})
             channel_id = g_settings.get('channel_id')
+            log_channel_id = g_settings.get('log_channel_id')
+            
+            # A. Notify User
             if channel_id:
                 channel = bot.get_channel(channel_id)
                 if channel:
@@ -204,6 +235,28 @@ async def cleanup_pending():
                             delete_after=30
                         )
                     except: pass
+            
+            # B. Update Log Message
+            if log_channel_id and log_msg_id:
+                log_channel = bot.get_channel(log_channel_id)
+                if log_channel:
+                    try:
+                        log_msg_obj = await log_channel.fetch_message(log_msg_id)
+                        
+                        try:
+                            user = await bot.fetch_user(user_id)
+                            user_text = user.mention
+                        except:
+                            user_text = f"User {user_id}"
+                        
+                        # Show which language they failed on
+                        lang_label = get_lang_label(lang_code) if lang_code else "No Selection"
+                        await log_msg_obj.edit(content=f"❌ {user_text} **Timed Out** (Lang: {lang_label})")
+                    except discord.NotFound:
+                        pass 
+                    except Exception as e:
+                        print(f"Log update failed: {e}")
+
         del pending_verifications[user_id]
     
     if to_remove:
@@ -316,11 +369,8 @@ async def on_message(message):
     # 1. TRIGGER
     if VERIFY_PATTERN.fullmatch(message.content.strip()):
         if not allowed_channel_id or message.channel.id != allowed_channel_id: return
-        
-        try:
-            await message.delete()
-        except Exception as e:
-            print(f"⚠️ Failed to delete trigger message: {e}")
+        try: await message.delete()
+        except: pass
 
         age_delta = datetime.now(timezone.utc) - message.author.created_at
         if age_delta.days < MIN_AGE:
@@ -342,6 +392,15 @@ async def on_message(message):
                     log_msg_id = log_msg.id
                 except: pass
 
+        # Store immediately (default lang is None)
+        pending_verifications[message.author.id] = {
+            "answer": None, 
+            "lang": None,
+            "log_msg_id": log_msg_id,
+            "timestamp": datetime.now(),
+            "guild_id": message.guild.id
+        }
+
         view = LanguageView(log_msg_id)
         prompt_msg = await message.channel.send(f"Hello {message.author.mention}, please select your language:", view=view)
         view.message = prompt_msg
@@ -350,13 +409,15 @@ async def on_message(message):
     # 2. ANSWER CHECK
     if message.author.id in pending_verifications:
         if not allowed_channel_id or message.channel.id != allowed_channel_id: return
-        
-        try:
-            await message.delete()
-        except Exception as e:
-            print(f"⚠️ Failed to delete answer message: {e}")
+        try: await message.delete()
+        except: pass
 
         user_data = pending_verifications[message.author.id]
+        
+        # Ignore if math hasn't been generated yet (user skipped buttons)
+        if user_data["answer"] is None:
+            return
+
         expected_text = user_data["answer"]
         lang_code = user_data["lang"]
         stored_log_id = user_data.get("log_msg_id")
@@ -380,12 +441,14 @@ async def on_message(message):
                     else:
                         await message.channel.send(welcome_msg)
 
+                    # Update Log to VERIFIED with Language info
                     if log_channel_id and stored_log_id:
                         l_channel = message.guild.get_channel(log_channel_id)
                         if l_channel:
                             try:
                                 log_msg_obj = await l_channel.fetch_message(stored_log_id)
-                                await log_msg_obj.edit(content=f"✅ {message.author.mention} **Verified!**")
+                                lang_label = get_lang_label(lang_code)
+                                await log_msg_obj.edit(content=f"✅ {message.author.mention} **Verified!** ({lang_label})")
                             except: pass
 
                     del pending_verifications[message.author.id]
