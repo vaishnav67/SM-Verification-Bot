@@ -1,5 +1,5 @@
 {
-    "bot_token": "BOT TOKEN HERE",
+    "bot_token": "INSERT_BOT_TOKEN_HERE",
     "min_account_age_days": 7,
     "rules": {
         "1": "Be nice; do not act rude to other people",
@@ -19,156 +19,156 @@
         "en": {
             "label": "English 🇺🇸",
             "style": "primary",
-            "message": "Welcome! Can you type the text of rule no. **{equation}** to get entry? This is an English only server so once you do get entry, stick to English only, thank you!",
-            "error": "Incorrect rule text. Please check punctuation, spaces, and the calculated number and make sure it is in English.",
-            "hint": "\n\n*(Copy and paste the rule text exactly as shown in the rules list which should also be in English)*"
+            "message": "Welcome! Please go to {rules_channel} to find the rules. To get verified, first solve this equation: **({equation})**.\n\nThe result is the **Rule Number**. Please copy and paste the **exact English text** of that specific rule into this chat to enter.\n\n*Note: This is an English-only server.*",
+            "error": "Incorrect. Please check your math, look in {rules_channel}, and paste the exact English rule text.",
+            "hint": "\n\n*(Example: If the answer is 2, copy the text for Rule 2)*"
         },
         "fr": {
             "label": "Français 🇫🇷 (by seig852, nagi)",
             "style": "secondary",
-            "message": "Bienvenue ! Peux tu me dire quel est le texte de la règle n° **{equation}** pour entrer ? Ce serveur est uniquement en anglais, donc une fois dedans, parle en anglais, merci !",
-            "error": "Texte de la règle incorrect, Vérifie la ponctuation, les espaces, le calcul et assures toi que c'est en anglais.",
-            "hint": "\n\n*(Copie et colle le texte de la règle exactement comme indiqué dans la liste, qui doit être en anglais)*"
+            "message": "Bienvenue ! S'il te plaît va dans {rules_channel} pour trouver les règles. Pour être vérifier, dans un premier temps résous cette équation **({equation})**.\n\n Le résultat doit être **le numéro d'un des règles**. S'il te plaît copie et colle **le texte exacte en anglais exact english text de cette règle** spécifique dans ce chat pour entrer.\n\n*PS : C'est un serveur uniquement en anglais.* ",
+            "error": "Incorrecte. S'il te plaît vérifie tes maths, regarde dans {rules_channel}, et copie le text exact en anglais",
+            "hint": "\n\n*(Indice : Si la réponse est 2, alors copie le texte de la règle numéro 2)*"
         },
         "de": {
             "label": "Deutsch 🇩🇪 (by aurion_94)",
             "style": "secondary",
-            "message": "Willkommen! Kannst du den Text der Regel Nr. **{equation}** eingeben, um Eintritt zu erhalten? Dies ist ein reiner Englisch-Server, also bleib bitte nach dem Eintritt ausschließlich bei Englisch, danke!",
-            "error": "Falscher Regeltext. Bitte überprüfe Zeichensetzung, Leerzeichen und die berechnete Zahl und stelle sicher, dass er auf Englisch ist.",
-            "hint": "\n\n*(Kopiere und füge den Regeltext exakt so ein, wie er in der Regelnliste steht, die ebenfalls auf Englisch sein sollte)*"
+            "message": "Willkommen! Bitte gehe zu {rules_channel}, um die Regeln zu finden. Um verifiziert zu werden, löse zuerst diese Gleichung: **({equation})**.\n\nDas Ergebnis ist die **Regelnummer**. Bitte kopiere den **exakten englischen Text** dieser Regel und füge ihn hier ein, um einzutreten.\n\n*Hinweis: Dies ist ein reiner Englisch-Server.*",
+            "error": "Falsch. Bitte überprüfe deine Rechnung, schau in {rules_channel} nach und füge den exakten englischen Regeltext ein.",
+            "hint": "\n\n*(Beispiel: Wenn die Antwort 2 ist, kopiere den Text für Regel 2)*"
         },
-	    "tl": {
+        "tl": {
             "label": "Filipino 🇵🇭 (by exoduswalker_)",
             "style": "secondary",
-            "message": "Maligayang pagdating! Maaari mo bang i-type ang teksto ng rule no. **{equation}** upang makapasok? Ingles lamang ang maaring gamitin sa server na ito, kaya kapag nakapasok ka na ay pakiusap na Ingles lang ang iyong gamiting wika. Salamat!",
-            "error": "Mali ang teksto ng rule. Pakisuri ang bantas (punctuation), mga espasyo, at ang kinalkula na numero. Siguraduhin ding ito ay nakasulat sa Ingles.",
-            "hint": "\n\n*(Kopyahin at i-paste ang teksto ng rule nang eksakto kung paano ito ipinapakita sa listahan, na dapat ay nasa English din)*"
+            "message": "Maligayang pagdating! Pakibasa ang {rules_channel} upang basahin ang mga patakaran. Upang ikaw ay ma-verify, sagutin ang equation na ito: **({equation})**.\n\nAng resulta ay ng **numero ng patakaran.** Paki-copy-paste ang **eksaktong English text** ng patakaran na iyon sa chat na ito upang makapasok.\n\n*Tandaan: Ang server na ito ay English lamang*",
+            "error": "Mali ang sagot. Pakitignan ang iyong math, tignan ang {rules_channel}, at i-paste ang eksatong English text.",
+            "hint": "\n\n*(Halimbawa: Kung ang sagot ay 2, i-kopya ang text ng Rule 2)*"
         },
         "ru": {
             "label": "Русский 🇷🇺 (by retrocore_himself, K2 Media Group | https://k2mg.net/)",
             "style": "secondary",
-            "message": "Добро пожаловать! Сможешь написать текст правила под номером **{equation}**, чтобы авторизоваться? Здесь общаются только на английском языке, поэтому как только пройдёшь дальше, пиши только на английском. Спасибо!",
-            "error": "Текст правила написан неправильно. Пожалуйста, проверь пунктуацию, пробелы, номер правила и что ответ на английском языке.",
-            "hint": "\n\n*(Скопируйте и вставьте текст правила именно как он написан в списке правил. Он также должен быть на английском)*"
+            "message": "Добро пожаловать! Пожалуйста, открой канал {rules_channel}, чтобы ознакомиться с правилами. Чтобы пройти проверку, реши этот пример: **({equation})**.\n\nЕго ответом будет **номер правила**. Затем скопируй и вставь **точный текст этого правила на английском** в этот чат, чтобы пройти дальше.\n\n*Помни, что на этом сервере общаются только на английском языке.*",
+            "error": "Неправильно, попробуй ещё раз. Проверь вычисленный номер правила, сверься с {rules_channel} и вставь точный текст правила на английском языке.",
+            "hint": "\n\n*(Например, если получился ответ 2, скопируй текст правила 2.)*"
         },
         "bz": {
             "label": "Português 🇧🇷 (by Cta_warrior)",
             "style": "secondary",
-            "message": "Bem-vindo! Pra entrar, é só digitar o texto da regra nº **{equation}**. Esse servidor é focado em inglês, então use apenas esse idioma por aqui, beleza? Valeu!",
-            "error": "Texto da regra incorreto. Verifique pontuação, espaços, o cálculo e certifique-se de que está em inglês.",
-            "hint": "\n\n*(Copie e cole o texto da regra exatamente como mostrado na lista, que deve estar em inglês)*"
+            "message": "Bem-vindo! Vá até {rules_channel} para ver as regras. Para verificar, primeiro resolva esta equação: **({equation})**.\n\nO resultado é o **Número da Regra**. Copie e cole o **texto exato em inglês** dessa regra aqui para entrar.\n\n*Nota: Este servidor é apenas em inglês.*",
+            "error": "Incorreto. Verifique a matemática, olhe em {rules_channel} e cole o texto exato da regra em inglês.",
+            "hint": "\n\n*(Exemplo: Se a resposta for 2, copie o texto da Regra 2)*"
         },
         "pt": {
             "label": "Português 🇵🇹 (by the_harpocrates)",
             "style": "secondary",
-            "message": "Bem-vindo! Pode digitar o texto da regra nº **{equation}** para entrar? Este servidor é apenas em inglês, então, ao entrar, use apenas inglês. Obrigado!",
-            "error": "Texto da regra incorreto. Verifique pontuação, espaços, o cálculo e certifique-se de que está em inglês.",
-            "hint": "\n\n*(Copie e cole o texto da regra exatamente como mostrado na lista, que deve estar em inglês)*"
+            "message": "Bem Vindo(a)! Por favor, vá para {rules_channel} para encontrar as regras. Para seres verificado(a), primeiro resolve esta equação: **({equation})**.\n\nO resultado é o Número da Regra. Por favor copia e cola o **texto exato em Inglês** da regra em específico para este chat para entrares..\n\n*Nota: Este é um server em Inglês apenas*",
+            "error": "Incorreto. Por favor verifica as contas, procura em {rules_channel}, e cola o texto exato da regra em Inglês.",
+            "hint": "\n\n*(Examplo: Se a resposta for 2, copia o texto da Regra 2)*"
         },
         "rs": {
-            "label": "Serbian 🇷🇸 (by mimaexplorer9783)",
+            "label": "Srpski🇷🇸 (by mimaexplorer9783)",
             "style": "secondary",
-            "message": "Dobrodosli! Da biste postali clan naseg servera, molimo vas ukucajte pravilo **{equation}**. Kada udjete u server, molimo vas da komunicirate iskljucivo na engleskom, hvala!",
-            "error": "Greska! Molimo proverite da li ste promasili neki interpunkcijski znak, da li ste dobro izracunali i da li ste pisali na engleskom.",
-            "hint": "\n\n*(kopirajte i nalepite pravilo sa spiska pravila koji je na engleskom)*"
+            "message": "Dobrodošli! Molimo posetite {rules_channel} da nađete pravila. Da biste bili verifikovani, prvo rešite ovu jednačinu **({equation})**./n/n*Napomena: komunicirajte isključivo na engleskom*",
+            "error": "Netačno. Molimo proverite da li ste dobro izračunali, zatim idite u {rules_channel} i nalepite tačan tekst ovde.",
+            "hint": "\n\n*(npr. ako je odgovor 2, kopirajte tekst pravila broj 2)*"
         },
         "id": {
             "label": "Bahasa Indonesia 🇮🇩 (by renjuvenated)",
             "style": "secondary",
-            "message": "Selamat Datang! Apakah anda bisa mengetik aturan no. **{equation}** untuk masuk? Server ini khusus bahasa Inggris, maka setelah masuk, harap gunakan bahasa Inggris saja. Terima Kasih!",
-            "error": "Teks aturan salah. Mohon periksa kembali penulisan tanda baca, spasi, dan jumlah hasil hitungan, dan pastikan jawabannya dalam bahasa Inggris!",
-            "hint": "\n\n*(Salin dan tempel teks aturan sama persis seperti yang ditampilkan di daftar peraturan yang juga harus ditulis dalam bahasa Inggris.)*"
+            "message": "Selamat datang! Mohon periksa {rules_channel} untuk mengetahui peraturannya. Untuk di verifikasi, mohon terlebih dahulu jawab pertanyaan ini dengan benar: **({equation})**\n\nHasil jawaban ada di **Rule Number**. Mohon salin dan tempel jawaban (exact english text) peraturan yang diminta tersebut di chat ini untuk masuk.",
+            "error": "Salah. Periksa hitungan Anda, lihat di {rules_channel}, dan tempel teks aturan bahasa Inggris yang tepat.",
+            "hint": "\n\n*(Contoh: Jika jawabannya 2, salin teks untuk Aturan 2)*"
         },
         "vi": {
-            "label": "Việt Nam 🇻🇳 (by drainbow264)",
-            "style": "secondary",
-            "message": "Chào mừng! Bạn có thể nhập nội dung của quy tắc số.... **{equation}** để được vào? Đây là máy chủ chỉ được sử dụng tiếng Anh. Khi bạn vào được máy chủ, vui lòng chỉ sử dụng tiếng Anh, cảm ơn bạn!",
-            "error": "Văn bản quy tắc này chưa chính xác. Vui lòng kiểm tra lại dấu câu, khoảng cách và số đã được tính toán, đảm bảo rằng nó được viết bằng tiếng Anh.",
-            "hint": "\n\n*(Sao chép và dán văn bản quy tắc chính xác như trong danh sách quy tắc (cũng phải bằng tiếng Anh).*"
+            "label": "Vietnemese 🇻🇳 (by drainbow264)",
+            "style": "primary",
+            "message": "Chào mừng bạn! Vui lòng đi đến {rules_channel} để tìm hiểu quy tắc. Để được xác minh, đầu tiên giải phương trình này: **({equation})**.\n\nKết quả là **Rule Number**. Vui lòng sao chép và dán **exact English text** của quy tắc cụ thể đó vào cuộc trò chuyện này để tham gia.\n\n*Lưu ý: Đây là máy chủ chỉ được hỗ trợ bằng tiếng Anh.*",
+            "error": "Chưa chính xác. Hãy kiểm tra lại phép tính của bạn, xem lại {rules_channel}, và dán văn bản quy tắc tiếng Anh chính xác vào đây.",
+            "hint": "\n\n*(Ví dụ: Nếu đáp án là 2, hãy sao chép văn bản của Quy tắc 2.)*"
         },
         "es": {
             "label": "Español 🇪🇸",
             "style": "secondary",
-            "message": "¡Bienvenido! ¿Puedes escribir el texto de la regla n.º **{equation}** para entrar? Este servidor es solo en inglés, así que una vez dentro, usa solo inglés. ¡Gracias!",
-            "error": "Texto de regla incorrecto. Verifica la puntuación, los espacios y el número calculado, y asegúrate de que esté en inglés.",
-            "hint": "\n\n*(Copia y pega el texto de la regla exactamente como aparece en la lista, el cual debe estar en inglés)*"
+            "message": "¡Bienvenido! Por favor ve a {rules_channel} para encontrar las reglas. Para verificarte, primero resuelve esta ecuación: **({equation})**.\n\nEl resultado es el **Número de Regla**. Copia y pega el **texto exacto en inglés** de esa regla específica aquí para entrar.\n\n*Nota: Este es un servidor solo en inglés.*",
+            "error": "Incorrecto. Revisa tu cálculo, mira en {rules_channel} y pega el texto exacto de la regla en inglés.",
+            "hint": "\n\n*(Ejemplo: Si la respuesta es 2, copia el texto de la Regla 2)*"
         },
         "it": {
             "label": "Italiano 🇮🇹",
             "style": "secondary",
-            "message": "Benvenuto! Puoi digitare il testo della regola n. **{equation}** per entrare? Questo server è solo in inglese, quindi una volta entrato, usa solo l'inglese. Grazie!",
-            "error": "Testo della regola errato. Controlla punteggiatura, spazi, il calcolo e assicurati che sia in inglese.",
-            "hint": "\n\n*(Copia e incolla il testo della regola esattamente come mostrato nella lista, che deve essere in inglese)*"
+            "message": "Benvenuto! Vai su {rules_channel} per trovare le regole. Per verificarti, risolvi prima questa equazione: **({equation})**.\n\nIl risultato è il **Numero della Regola**. Copia e incolla il **testo esatto in inglese** di quella regola qui per entrare.\n\n*Nota: Questo server è solo in inglese.*",
+            "error": "Errato. Controlla i calcoli, guarda in {rules_channel} e incolla il testo esatto della regola in inglese.",
+            "hint": "\n\n*(Esempio: Se la risposta è 2, copia il testo della Regola 2)*"
         },
         "cn": {
             "label": "简体中文 🇨🇳",
             "style": "secondary",
-            "message": "欢迎！请输入第 **{equation}** 条规则的文本以进入？这是一个纯英语服务器，进入后请仅使用英语，谢谢！",
-            "error": "规则文本错误。请检查标点、空格、计算结果，并确保文本为英文。",
-            "hint": "\n\n*(请完全按照规则列表中的显示复制粘贴规则文本，文本应为英文)*"
+            "message": "欢迎！请前往 {rules_channel} 查看规则。要通过验证，请先解此方程：**({equation})**。\n\n结果即为**规则编号**。请复制该规则的**准确英文文本**并粘贴到此处以进入。\n\n*注意：这是一个纯英语服务器。*",
+            "error": "错误。请检查计算，查看 {rules_channel}，并粘贴准确的英文规则文本。",
+            "hint": "\n\n*(示例：如果答案是 2，请复制规则 2 的文本)*"
         },
         "jp": {
             "label": "日本語 🇯🇵",
             "style": "secondary",
-            "message": "ようこそ！入室するにはルール No. **{equation}** の文章を入力してください。ここは英語専用サーバーですので、入室後は英語のみを使用してください。",
-            "error": "ルールの文章が間違っています。句読点、スペース、計算を確認し、英語であることを確認してください。",
-            "hint": "\n\n*(ルールリストに表示されている通りに、英語の文章を正確にコピー＆ペーストしてください)*"
+            "message": "ようこそ！ルールを確認するために {rules_channel} へ行ってください。認証するには、まずこの式を解いてください：**({equation})**。\n\n答えが**ルール番号**です。そのルールの**正確な英語のテキスト**をコピーしてここに貼り付けてください。\n\n*注：ここは英語専用サーバーです。*",
+            "error": "不正解です。計算を確認し、{rules_channel} を見て、正確な英語のルールテキストを貼り付けてください。",
+            "hint": "\n\n*(例：答えが2の場合、Rule 2のテキストをコピーしてください)*"
         },
         "kr": {
             "label": "한국어 🇰🇷",
             "style": "secondary",
-            "message": "환영합니다! 입장하려면 규칙 **{equation}**번의 내용을 입력해 주시겠습니까? 이곳은 영어 전용 서버이므로 입장 후에는 영어만 사용해 주세요. 감사합니다!",
-            "error": "규칙 내용이 잘못되었습니다. 문장 부호, 공백, 계산을 확인하고 영어로 입력되었는지 확인하세요.",
-            "hint": "\n\n*(규칙 목록에 표시된 대로 정확히 복사하여 붙여넣으세요. 영어로 되어 있어야 합니다)*"
+            "message": "환영합니다! 규칙을 확인하려면 {rules_channel}로 이동하세요. 인증하려면 먼저 이 방정식을 푸세요: **({equation})**.\n\n정답은 **규칙 번호**입니다. 해당 규칙의 **정확한 영어 텍스트**를 복사하여 여기에 붙여넣으세요.\n\n*참고: 이곳은 영어 전용 서버입니다.*",
+            "error": "틀렸습니다. 계산을 확인하고, {rules_channel}을 확인한 뒤 정확한 영어 규칙 텍스트를 붙여넣으세요.",
+            "hint": "\n\n*(예: 정답이 2이면 Rule 2의 텍스트를 복사하세요)*"
         },
         "ar": {
             "label": "العربية 🇸🇦",
             "style": "secondary",
-            "message": "مرحبًا بك! هل يمكنك كتابة نص القاعدة رقم **{equation}** للدخول؟ هذا خادم باللغة الإنجليزية فقط، لذا بمجرد الدخول، التزم بالإنجليزية فقط، شكرًا!",
-            "error": "نص القاعدة غير صحيح. يرجى التحقق من الترقيم والمسافات والحساب والتأكد من أنها باللغة الإنجليزية.",
-            "hint": "\n\n*(انسخ والصق نص القاعدة تمامًا كما هو موضح في القائمة والذي يجب أن يكون باللغة الإنجليزية)*"
+            "message": "مرحبًا بك! يرجى الذهاب إلى {rules_channel} للعثور على القواعد. للتحقق، قم أولاً بحل هذه المعادلة: **({equation})**.\n\nالنتيجة هي **رقم القاعدة**. يرجى نسخ ولصق **النص الإنجليزي الدقيق** لتلك القاعدة هنا للدخول.\n\n*ملاحظة: هذا الخادم باللغة الإنجليزية فقط.*",
+            "error": "غير صحيح. يرجى التحقق من الحساب، والنظر في {rules_channel}، ولصق نص القاعدة الإنجليزي الدقيق.",
+            "hint": "\n\n*(مثال: إذا كان الجواب 2، انسخ نص القاعدة 2)*"
         },
         "ms": {
             "label": "Bahasa Melayu 🇲🇾",
             "style": "secondary",
-            "message": "Selamat datang! Boleh taip teks peraturan no. **{equation}** untuk masuk? Ini server Bahasa Inggeris, jadi selepas masuk, guna Bahasa Inggeris sahaja. Terima kasih!",
-            "error": "Teks peraturan salah. Semak tanda baca, jarak, kiraan dan pastikan ia dalam Bahasa Inggeris.",
-            "hint": "\n\n*(Salin dan tampal teks peraturan tepat seperti yang dipaparkan dalam senarai yang juga sepatutnya dalam Bahasa Inggeris)*"
+            "message": "Selamat datang! Sila pergi ke {rules_channel} untuk mencari peraturan. Untuk verifikasi, selesaikan persamaan ini dahulu: **({equation})**.\n\nJawapannya ialah **Nombor Peraturan**. Sila salin dan tampal **teks Bahasa Inggeris yang tepat** bagi peraturan tersebut di sini.\n\n*Nota: Ini adalah server Bahasa Inggeris sahaja.*",
+            "error": "Salah. Sila semak pengiraan anda, lihat {rules_channel}, dan tampal teks peraturan Bahasa Inggeris yang tepat.",
+            "hint": "\n\n*(Contoh: Jika jawapannya 2, salin teks untuk Peraturan 2)*"
         },
         "pl": {
             "label": "Polski 🇵🇱",
             "style": "secondary",
-            "message": "Witaj! Czy możesz wpisać treść zasady nr **{equation}**, aby wejść? To serwer anglojęzyczny, więc po wejściu używaj tylko angielskiego. Dzięki!",
-            "error": "Nieprawidłowy tekst zasady. Sprawdź interpunkcję, spacje, obliczenia i upewnij się, że jest po angielsku.",
-            "hint": "\n\n*(Skopiuj i wklej tekst zasady dokładnie tak, jak pokazano na liście, która powinna być również po angielsku)*"
+            "message": "Witaj! Przejdź do {rules_channel}, aby znaleźć zasady. Aby przejść weryfikację, najpierw rozwiąż to równanie: **({equation})**.\n\nWynik to **Numer Zasady**. Skopiuj i wklej **dokładny angielski tekst** tej zasady tutaj, aby wejść.\n\n*Uwaga: To serwer tylko w języku angielskim.*",
+            "error": "Nieprawidłowo. Sprawdź obliczenia, zajrzyj do {rules_channel} i wklej dokładny angielski tekst zasady.",
+            "hint": "\n\n*(Przykład: Jeśli odpowiedź to 2, skopiuj tekst Zasady 2)*"
         },
         "uk": {
             "label": "Українська 🇺🇦",
             "style": "secondary",
-            "message": "Ласкаво просимо! Напишіть текст правила № **{equation}** для входу. Це англомовний сервер, тому після входу спілкуйтеся лише англійською. Дякую!",
-            "error": "Невірний текст правила. Перевірте пунктуацію, пробіли, розрахунок та переконайтеся, що текст англійською.",
-            "hint": "\n\n*(Скопіюйте та вставте текст правила точно так, як у списку; він має бути англійською)*"
+            "message": "Ласкаво просимо! Будь ласка, перейдіть до {rules_channel}, щоб знайти правила. Для верифікації спочатку розв'яжіть це рівняння: **({equation})**.\n\nРезультат — це **Номер Правила**. Скопіюйте та вставте **точний текст англійською** цього правила сюди.\n\n*Примітка: Це англомовний сервер.*",
+            "error": "Невірно. Перевірте розрахунки, подивіться в {rules_channel} та вставте точний текст правила англійською.",
+            "hint": "\n\n*(Приклад: Якщо відповідь 2, скопіюйте текст Правила 2)*"
         },
         "tr": {
             "label": "Türkçe 🇹🇷",
             "style": "secondary",
-            "message": "Hoş geldiniz! Giriş yapmak için **{equation}** numaralı kuralın metnini yazar mısınız? Burası sadece İngilizce bir sunucudur, bu yüzden girdikten sonra lütfen sadece İngilizce konuşun, teşekkürler!",
-            "error": "Hatalı kural metni. Lütfen noktalama işaretlerini, boşlukları, hesaplamayı kontrol edin ve İngilizce olduğundan emin olun.",
-            "hint": "\n\n*(Kural metnini, kural listesinde gösterildiği gibi -İngilizce olarak- aynen kopyalayıp yapıştırın)*"
+            "message": "Hoş geldiniz! Kuralları bulmak için lütfen {rules_channel} kanalına gidin. Doğrulanmak için önce bu denklemi çözün: **({equation})**.\n\nSonuç **Kural Numarasıdır**. Lütfen o kuralın **tam İngilizce metnini** kopyalayıp buraya yapıştırın.\n\n*Not: Bu sunucu sadece İngilizcedir.*",
+            "error": "Yanlış. Lütfen matematiğinizi kontrol edin, {rules_channel} kanalına bakın ve tam İngilizce kural metnini yapıştırın.",
+            "hint": "\n\n*(Örnek: Cevap 2 ise, Kural 2'nin metnini kopyalayın)*"
         },
         "th": {
             "label": "ไทย 🇹🇭",
             "style": "secondary",
-            "message": "ยินดีต้อนรับ! กรุณาพิมพ์ข้อความของกฎข้อที่ **{equation}** เพื่อเข้าสู่เซิร์ฟเวอร์? ที่นี่ใช้ภาษาอังกฤษเท่านั้น ดังนั้นเมื่อเข้ามาแล้ว โปรดใช้เฉพาะภาษาอังกฤษ ขอบคุณ!",
-            "error": "ข้อความกฎไม่ถูกต้อง กรุณาตรวจสอบเครื่องหมายวรรคตอน เว้นวรรค การคำนวณ และตรวจสอบให้แน่ใจว่าเป็นภาษาอังกฤษ",
-            "hint": "\n\n*(คัดลอกและวางข้อความกฎให้ตรงตามที่แสดงในรายการกฎ ซึ่งต้องเป็นภาษาอังกฤษด้วย)*"
+            "message": "ยินดีต้อนรับ! โปรดไปที่ {rules_channel} เพื่อดูกฎ. เพื่อยืนยันตัวตน ก่อนอื่นให้แก้สมการนี้: **({equation})**.\n\nคำตอบคือ **หมายเลขกฎ**. โปรดคัดลอกและวาง **ข้อความภาษาอังกฤษที่ถูกต้อง** ของกฎข้อนั้นที่นี่เพื่อเข้าสู่ระบบ.\n\n*หมายเหตุ: นี่คือเซิร์ฟเวอร์ภาษาอังกฤษเท่านั้น.*",
+            "error": "ไม่ถูกต้อง. โปรดตรวจสอบการคำนวณ ดูที่ {rules_channel} และวางข้อความกฎภาษาอังกฤษที่ถูกต้อง.",
+            "hint": "\n\n*(ตัวอย่าง: หากคำตอบคือ 2 ให้คัดลอกข้อความสำหรับกฎข้อที่ 2)*"
         },
         "hi": {
             "label": "हिन्दी 🇮🇳",
             "style": "secondary",
-            "message": "स्वागत है! क्या आप प्रवेश पाने के लिए नियम संख्या **{equation}** का पाठ टाइप कर सकते हैं? यह केवल अंग्रेजी सर्वर है, इसलिए प्रवेश करने के बाद केवल अंग्रेजी का उपयोग करें, धन्यवाद!",
-            "error": "गलत नियम पाठ। कृपया विराम चिह्न, रिक्त स्थान, गणना की जाँच करें और सुनिश्चित करें कि यह अंग्रेजी में है।",
-            "hint": "\n\n*(नियम पाठ को ठीक वैसे ही कॉपी और पेस्ट करें जैसे कि नियमों की सूची में दिखाया गया है, जो अंग्रेजी में होना चाहिए)*"
+            "message": "स्वागत है! नियमों को खोजने के लिए कृपया {rules_channel} पर जाएं। सत्यापित होने के लिए, पहले इस समीकरण को हल करें: **({equation})**।\n\nपरिणाम **नियम संख्या** है। कृपया प्रवेश करने के लिए उस विशिष्ट नियम का **सटीक अंग्रेजी पाठ** यहां कॉपी और पेस्ट करें।\n\n*नोट: यह केवल अंग्रेजी सर्वर है।*",
+            "error": "गलत। कृपया अपनी गणना जांचें, {rules_channel} में देखें, और सटीक अंग्रेजी नियम पाठ पेस्ट करें।",
+            "hint": "\n\n*(उदाहरण: यदि उत्तर 2 है, तो नियम 2 के लिए पाठ कॉपी करें)*"
         }
     },
     "guild_settings": {}

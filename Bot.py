@@ -67,7 +67,6 @@ def normalize_text(text):
     return text
 
 def get_lang_label(code):
-    """Returns the pretty label (e.g. English 🇺🇸) for a code."""
     return LANGUAGES_CONFIG.get(code, {}).get("label", code)
 
 def generate_complicated_math():
@@ -119,7 +118,7 @@ class LanguageSelect(discord.ui.Select):
 
 class LanguageView(discord.ui.View):
     def __init__(self, log_msg_id=None):
-        super().__init__(timeout=300) # 5 Minutes UI Timeout
+        super().__init__(timeout=300) 
         self.log_msg_id = log_msg_id
         self.message = None 
         self.create_dropdowns()
@@ -156,7 +155,6 @@ class LanguageView(discord.ui.View):
                     "timestamp": datetime.now() 
                 })
             else:
-                # Fallback if entry missing
                 pending_verifications[interaction.user.id] = {
                     "answer": RULES[rule_key],
                     "lang": lang_code,
@@ -165,7 +163,7 @@ class LanguageView(discord.ui.View):
                     "guild_id": interaction.guild_id
                 }
             
-            # --- UPDATE STAFF LOG TO SHOW LANGUAGE SELECTION ---
+            # Update Staff Log
             if self.log_msg_id:
                 gid = str(interaction.guild_id)
                 g_settings = config_data.get('guild_settings', {}).get(gid, {})
@@ -178,14 +176,27 @@ class LanguageView(discord.ui.View):
                             lang_label = get_lang_label(lang_code)
                             await msg.edit(content=f"⏳ {interaction.user.mention} is verifying in **{lang_label}**...")
                         except: pass
-            # ---------------------------------------------------
 
+            # --- PREPARE MESSAGE ---
             lang_data = LANGUAGES_CONFIG.get(lang_code, {})
             msg_template = lang_data.get("message", "Error: Message missing.")
             hint_template = lang_data.get("hint", "\n\n*(Copy and paste the rule text)*")
             
-            message_text = msg_template.format(equation=equation_str)
+            # FETCH RULES CHANNEL ID
+            gid = str(interaction.guild_id)
+            rules_channel_id = config_data.get('guild_settings', {}).get(gid, {}).get('rules_channel_id')
             
+            # Create Mention Link (fallback to text if not set)
+            rules_mention = f"<#{rules_channel_id}>" if rules_channel_id else "the rules channel"
+
+            # Inject both {equation} and {rules_channel}
+            # .format() ignores extra arguments if they aren't in the string, so this is safe.
+            try:
+                message_text = msg_template.format(equation=equation_str, rules_channel=rules_mention)
+            except KeyError:
+                # Fallback if user messed up brackets in config
+                message_text = msg_template.replace("{equation}", equation_str).replace("{rules_channel}", rules_mention)
+
             await interaction.response.send_message(message_text + hint_template, ephemeral=True)
             try:
                 await interaction.message.delete()
@@ -200,31 +211,28 @@ intents.members = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# --- BACKGROUND TASK (CLEANUP) ---
+# --- BACKGROUND TASK ---
 
 @tasks.loop(minutes=1) 
 async def cleanup_pending():
     now = datetime.now()
     to_remove = []
     
-    # 1. Identify expired users (> 6 mins)
     for user_id, data in pending_verifications.items():
         if "timestamp" in data:
             if (now - data["timestamp"]).total_seconds() > 360:
                 to_remove.append((user_id, data))
     
-    # 2. Process removals
     for user_id, data in to_remove:
         guild_id = data.get("guild_id")
         log_msg_id = data.get("log_msg_id")
-        lang_code = data.get("lang") # Get the language they were using
+        lang_code = data.get("lang")
 
         if guild_id:
             g_settings = config_data.get('guild_settings', {}).get(str(guild_id), {})
             channel_id = g_settings.get('channel_id')
             log_channel_id = g_settings.get('log_channel_id')
             
-            # A. Notify User
             if channel_id:
                 channel = bot.get_channel(channel_id)
                 if channel:
@@ -236,26 +244,20 @@ async def cleanup_pending():
                         )
                     except: pass
             
-            # B. Update Log Message
             if log_channel_id and log_msg_id:
                 log_channel = bot.get_channel(log_channel_id)
                 if log_channel:
                     try:
                         log_msg_obj = await log_channel.fetch_message(log_msg_id)
-                        
                         try:
                             user = await bot.fetch_user(user_id)
                             user_text = user.mention
                         except:
                             user_text = f"User {user_id}"
                         
-                        # Show which language they failed on
                         lang_label = get_lang_label(lang_code) if lang_code else "No Selection"
                         await log_msg_obj.edit(content=f"❌ {user_text} **Timed Out** (Lang: {lang_label})")
-                    except discord.NotFound:
-                        pass 
-                    except Exception as e:
-                        print(f"Log update failed: {e}")
+                    except: pass
 
         del pending_verifications[user_id]
     
@@ -317,6 +319,17 @@ async def set_log_channel(interaction: discord.Interaction):
     save_config()
     await interaction.response.send_message(f"✅ Log/Progress Channel set to: {interaction.channel.mention}", ephemeral=True)
 
+@bot.tree.command(name="set_rules_channel", description="The channel containing the rules list.")
+@app_commands.default_permissions(administrator=True)
+async def set_rules_channel(interaction: discord.Interaction, channel: discord.TextChannel):
+    gid = str(interaction.guild_id)
+    if "guild_settings" not in config_data: config_data["guild_settings"] = {}
+    if gid not in config_data['guild_settings']: config_data['guild_settings'][gid] = {}
+    
+    config_data['guild_settings'][gid]['rules_channel_id'] = channel.id
+    save_config()
+    await interaction.response.send_message(f"✅ Rules Channel set to: {channel.mention}", ephemeral=True)
+
 @bot.tree.command(name="set_role", description="Set verified role.")
 @app_commands.default_permissions(administrator=True)
 async def set_role(interaction: discord.Interaction, role: discord.Role):
@@ -344,12 +357,14 @@ async def check_config(interaction: discord.Interaction):
     v_chan = get_status(settings.get('channel_id'), interaction.guild.get_channel)
     w_chan = get_status(settings.get('welcome_channel_id'), interaction.guild.get_channel)
     l_chan = get_status(settings.get('log_channel_id'), interaction.guild.get_channel)
+    r_chan = get_status(settings.get('rules_channel_id'), interaction.guild.get_channel)
     role_s = get_status(settings.get('role_id'), interaction.guild.get_role)
 
     embed = discord.Embed(title="🔐 Verification Configuration", color=discord.Color.blue())
     embed.add_field(name="Verification Channel", value=v_chan, inline=True)
     embed.add_field(name="Welcome Channel", value=w_chan, inline=True)
     embed.add_field(name="Log Channel", value=l_chan, inline=True)
+    embed.add_field(name="Rules Channel", value=r_chan, inline=True)
     embed.add_field(name="Verified Role", value=role_s, inline=False)
     
     await interaction.response.send_message(embed=embed, ephemeral=True)
@@ -369,6 +384,7 @@ async def on_message(message):
     # 1. TRIGGER
     if VERIFY_PATTERN.fullmatch(message.content.strip()):
         if not allowed_channel_id or message.channel.id != allowed_channel_id: return
+        
         try: await message.delete()
         except: pass
 
@@ -392,7 +408,7 @@ async def on_message(message):
                     log_msg_id = log_msg.id
                 except: pass
 
-        # Store immediately (default lang is None)
+        # Store immediately
         pending_verifications[message.author.id] = {
             "answer": None, 
             "lang": None,
@@ -413,10 +429,7 @@ async def on_message(message):
         except: pass
 
         user_data = pending_verifications[message.author.id]
-        
-        # Ignore if math hasn't been generated yet (user skipped buttons)
-        if user_data["answer"] is None:
-            return
+        if user_data["answer"] is None: return
 
         expected_text = user_data["answer"]
         lang_code = user_data["lang"]
@@ -431,7 +444,6 @@ async def on_message(message):
             if role:
                 try:
                     await message.author.add_roles(role)
-                    # Temp success msg
                     await message.channel.send(f"✅ {message.author.mention} has been verified.", delete_after=5)
                     
                     welcome_msg = f"Welcome to the server, {message.author.mention}! Please remember: **English Only**."
@@ -441,7 +453,6 @@ async def on_message(message):
                     else:
                         await message.channel.send(welcome_msg)
 
-                    # Update Log to VERIFIED with Language info
                     if log_channel_id and stored_log_id:
                         l_channel = message.guild.get_channel(log_channel_id)
                         if l_channel:
@@ -460,8 +471,19 @@ async def on_message(message):
         else:
             lang_data = LANGUAGES_CONFIG.get(lang_code, LANGUAGES_CONFIG['en'])
             error_msg = lang_data.get("error", "Incorrect rule text.")
+            
+            # Fetch rules channel link again for error message
+            rules_channel_id = config_data.get('guild_settings', {}).get(str(message.guild.id), {}).get('rules_channel_id')
+            rules_mention = f"<#{rules_channel_id}>" if rules_channel_id else "the rules channel"
+            
+            # Allow {rules_channel} in error message too
+            try:
+                error_msg = error_msg.format(rules_channel=rules_mention)
+            except: 
+                pass
+
             await message.channel.send(
-                f"❌ {message.author.mention} {error_msg}\n*(Check punctuation and ensure it is English)*", 
+                f"❌ {message.author.mention} {error_msg}", 
                 delete_after=30
             )
 
