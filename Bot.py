@@ -7,6 +7,7 @@ import os
 import sys
 import re
 import asyncio
+import difflib
 from datetime import datetime, timedelta, timezone
 
 # --- FILE PATH ---
@@ -65,6 +66,12 @@ def normalize_text(text):
     text = re.sub(r'[^a-z0-9\s]', ' ', text)
     text = re.sub(r'\s+', ' ', text).strip()
     return text
+
+def is_close_match(user_input, expected, threshold=0.85):
+    norm_user = normalize_text(user_input)
+    norm_expected = normalize_text(expected)
+    matcher = difflib.SequenceMatcher(None, norm_user, norm_expected)
+    return matcher.ratio() >= threshold
 
 def get_lang_label(code):
     return LANGUAGES_CONFIG.get(code, {}).get("label", code)
@@ -177,24 +184,17 @@ class LanguageView(discord.ui.View):
                             await msg.edit(content=f"⏳ {interaction.user.mention} is verifying in **{lang_label}**...")
                         except: pass
 
-            # --- PREPARE MESSAGE ---
             lang_data = LANGUAGES_CONFIG.get(lang_code, {})
             msg_template = lang_data.get("message", "Error: Message missing.")
             hint_template = lang_data.get("hint", "\n\n*(Copy and paste the rule text)*")
             
-            # FETCH RULES CHANNEL ID
             gid = str(interaction.guild_id)
             rules_channel_id = config_data.get('guild_settings', {}).get(gid, {}).get('rules_channel_id')
-            
-            # Create Mention Link (fallback to text if not set)
             rules_mention = f"<#{rules_channel_id}>" if rules_channel_id else "the rules channel"
 
-            # Inject both {equation} and {rules_channel}
-            # .format() ignores extra arguments if they aren't in the string, so this is safe.
             try:
                 message_text = msg_template.format(equation=equation_str, rules_channel=rules_mention)
             except KeyError:
-                # Fallback if user messed up brackets in config
                 message_text = msg_template.replace("{equation}", equation_str).replace("{rules_channel}", rules_mention)
 
             await interaction.response.send_message(message_text + hint_template, ephemeral=True)
@@ -309,6 +309,26 @@ async def set_welcome_channel(interaction: discord.Interaction):
     save_config()
     await interaction.response.send_message(f"✅ Welcome Channel set to: {interaction.channel.mention}", ephemeral=True)
 
+# --- NEW COMMAND: SET WELCOME EXTRA ---
+@bot.tree.command(name="set_welcome_extra", description="Add extra text/links after the default welcome message.")
+@app_commands.describe(text="The text to append (leave empty to clear). Supports channel links like #general.")
+@app_commands.default_permissions(administrator=True)
+async def set_welcome_extra(interaction: discord.Interaction, text: str = None):
+    gid = str(interaction.guild_id)
+    if "guild_settings" not in config_data: config_data["guild_settings"] = {}
+    if gid not in config_data['guild_settings']: config_data['guild_settings'][gid] = {}
+    
+    if text:
+        config_data['guild_settings'][gid]['welcome_extra'] = text
+        save_config()
+        await interaction.response.send_message(f"✅ Welcome message extra text updated:\n\n*...English Only.*\n**{text}**", ephemeral=True)
+    else:
+        # Clear it if empty
+        config_data['guild_settings'][gid]['welcome_extra'] = ""
+        save_config()
+        await interaction.response.send_message(f"✅ Welcome message extra text **removed**.", ephemeral=True)
+# --------------------------------------
+
 @bot.tree.command(name="set_log_channel", description="Where staff see verification progress.")
 @app_commands.default_permissions(administrator=True)
 async def set_log_channel(interaction: discord.Interaction):
@@ -359,13 +379,18 @@ async def check_config(interaction: discord.Interaction):
     l_chan = get_status(settings.get('log_channel_id'), interaction.guild.get_channel)
     r_chan = get_status(settings.get('rules_channel_id'), interaction.guild.get_channel)
     role_s = get_status(settings.get('role_id'), interaction.guild.get_role)
+    
+    # Show extra text status
+    extra_txt = settings.get('welcome_extra')
+    extra_status = f"📝 **Set:** \"{extra_txt[:50]}...\"" if extra_txt else "❌ Not Set"
 
     embed = discord.Embed(title="🔐 Verification Configuration", color=discord.Color.blue())
     embed.add_field(name="Verification Channel", value=v_chan, inline=True)
     embed.add_field(name="Welcome Channel", value=w_chan, inline=True)
     embed.add_field(name="Log Channel", value=l_chan, inline=True)
     embed.add_field(name="Rules Channel", value=r_chan, inline=True)
-    embed.add_field(name="Verified Role", value=role_s, inline=False)
+    embed.add_field(name="Verified Role", value=role_s, inline=True)
+    embed.add_field(name="Welcome Extra Text", value=extra_status, inline=False)
     
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
@@ -380,11 +405,11 @@ async def on_message(message):
     welcome_channel_id = g_settings.get('welcome_channel_id')
     log_channel_id = g_settings.get('log_channel_id')
     verified_role_id = g_settings.get('role_id')
+    welcome_extra = g_settings.get('welcome_extra', "") # Get extra text
 
     # 1. TRIGGER
     if VERIFY_PATTERN.fullmatch(message.content.strip()):
         if not allowed_channel_id or message.channel.id != allowed_channel_id: return
-        
         try: await message.delete()
         except: pass
 
@@ -408,7 +433,6 @@ async def on_message(message):
                     log_msg_id = log_msg.id
                 except: pass
 
-        # Store immediately
         pending_verifications[message.author.id] = {
             "answer": None, 
             "lang": None,
@@ -435,7 +459,8 @@ async def on_message(message):
         lang_code = user_data["lang"]
         stored_log_id = user_data.get("log_msg_id")
         
-        if normalize_text(message.content) == normalize_text(expected_text):
+        # --- NEW FUZZY MATCH LOGIC ---
+        if is_close_match(message.content, expected_text):
             if not verified_role_id:
                 await message.channel.send("⚠️ Error: Role not set.", delete_after=10)
                 return
@@ -446,12 +471,22 @@ async def on_message(message):
                     await message.author.add_roles(role)
                     await message.channel.send(f"✅ {message.author.mention} has been verified.", delete_after=5)
                     
-                    welcome_msg = f"Welcome to the server, {message.author.mention}! Please remember: **English Only**."
+                    # --- CONSTRUCT WELCOME MESSAGE ---
+                    base_welcome = f"Welcome to the server, {message.author.mention}! Please remember: **English Only**."
+                    
+                    # Add extra text if it exists (append with new line)
+                    if welcome_extra:
+                        final_welcome = f"{base_welcome}\n{welcome_extra}"
+                    else:
+                        final_welcome = base_welcome
+
+                    # Send to channel
                     if welcome_channel_id:
                         w_channel = message.guild.get_channel(welcome_channel_id)
-                        if w_channel: await w_channel.send(welcome_msg)
+                        if w_channel: await w_channel.send(final_welcome)
                     else:
-                        await message.channel.send(welcome_msg)
+                        await message.channel.send(final_welcome)
+                    # ---------------------------------
 
                     if log_channel_id and stored_log_id:
                         l_channel = message.guild.get_channel(log_channel_id)
@@ -472,15 +507,11 @@ async def on_message(message):
             lang_data = LANGUAGES_CONFIG.get(lang_code, LANGUAGES_CONFIG['en'])
             error_msg = lang_data.get("error", "Incorrect rule text.")
             
-            # Fetch rules channel link again for error message
             rules_channel_id = config_data.get('guild_settings', {}).get(str(message.guild.id), {}).get('rules_channel_id')
             rules_mention = f"<#{rules_channel_id}>" if rules_channel_id else "the rules channel"
             
-            # Allow {rules_channel} in error message too
-            try:
-                error_msg = error_msg.format(rules_channel=rules_mention)
-            except: 
-                pass
+            try: error_msg = error_msg.format(rules_channel=rules_mention)
+            except: pass
 
             await message.channel.send(
                 f"❌ {message.author.mention} {error_msg}", 

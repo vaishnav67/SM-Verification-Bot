@@ -26,6 +26,7 @@ It features **Regex pattern matching**, **Anti-Raid account age checks**, **Traf
     *   *On Failure:* "❌ User **Timed Out** (English)"
 *   **Slash Commands:** Fully managed via Discord UI (`/set_channel`, `/reload`, etc.).
 *   **Welcome System:** Sends a custom welcome message to a specific channel upon successful verification.
+    *   **Custom Extras:** Admins can append extra text or links (like channel mentions) to the welcome message.
 
 ---
 
@@ -71,14 +72,18 @@ You must create this file. The bot uses this to store your Token, Rules, and Tra
 4.  **Configure the Welcome Channel:**
     Go to the channel where you want "Welcome User!" messages to appear and type:
     `/set_welcome_channel`
-5.  **Configure the Log Channel:**
+5.  **Add Extra Welcome Text (Optional):**
+    Add extra instructions or links after the standard welcome message:
+    `/set_welcome_extra Check out #general to chat!`
+    *(Leave empty to clear it).*
+6.  **Configure the Log Channel:**
     Go to your staff-only channel and type:
     `/set_log_channel`
-6.  **Set the Verified Role:**
+7.  **Set the Verified Role:**
     Type `/set_role role:@Member` (select the actual role).
-7.  **Verify Configuration:**
+8.  **Verify Configuration:**
     Type `/check_config` to see an overview of all settings.
-8.  **Hot Reload:**
+9.  **Hot Reload:**
     If you edit the JSON file (e.g., to add a language), type `/reload` to update the bot instantly.
 
 ---
