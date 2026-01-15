@@ -1,23 +1,23 @@
-# 🔐 SphereMatchers Verification Bot
+# SphereMatchers Verification Bot
 
 A highly configurable, multi-language Discord bot designed to secure your server. It forces users to prove they have read the rules by solving a math problem and copy-pasting the specific English rule text.
 
 It features **Regex pattern matching**, **Anti-Raid account age checks**, **Traffic Logging**, and **Fuzzy Text Matching**.
 
-## ✨ Key Features
+## Key Features
 
-### 🛡️ Security & Verification
+### Security & Verification
 *   **Smart Regex Trigger:** Detects flexible variations like *"I have read the rules"*, *"I've read the rules"*, *"Ive read the rules"*, and allows optional punctuation or "here" at the end.
 *   **Math Challenge:** Generates random integer-only equations (Addition, Subtraction, Multiplication, Division) using clear symbols (`×`, `÷`).
 *   **Fuzzy Rule Matching:** Users must copy-paste the English rule text, but the bot is forgiving of **punctuation, capitalization, and extra spaces**.
 *   **Anti-Raid / Account Age:** Automatically places accounts created less than **7 days** ago (configurable) into a **1-week Timeout**.
 
-### 🌍 Multi-Language Support
+### Multi-Language Support
 *   **Dynamic Dropdowns:** Users select their language from a dropdown menu.
 *   **Auto-Scaling:** Automatically handles unlimited languages by creating multiple dropdown menus if the list exceeds Discord's limit (25 per menu).
 *   **Contextual Messages:** Messages can dynamically link to your rules channel using the `{rules_channel}` placeholder.
 
-### ⚙️ Administration & Hygiene
+### Administration & Hygiene
 *   **Chat Hygiene:** The bot **auto-deletes** user triggers, wrong answers, and verification menus to keep your channel clean.
 *   **Detailed Logging:** Live updates in a staff channel:
     *   *On Trigger:* "⏳ User is attempting verification..."
@@ -30,7 +30,7 @@ It features **Regex pattern matching**, **Anti-Raid account age checks**, **Traf
 
 ---
 
-## 📋 Prerequisites
+## Prerequisites
 
 *   **Python 3.8** or higher.
 *   **Discord Bot Token** with **Message Content** and **Server Members** intents enabled.
@@ -38,7 +38,7 @@ It features **Regex pattern matching**, **Anti-Raid account age checks**, **Traf
 
 ---
 
-## 🛠️ Installation
+## Installation
 
 1.  **Install the library:**
     ```bash
@@ -53,14 +53,14 @@ It features **Regex pattern matching**, **Anti-Raid account age checks**, **Traf
 
 ---
 
-## 📝 Configuration (`server_config.json`)
+## Configuration (`server_config.json`)
 
 You must create this file. The bot uses this to store your Token, Rules, and Translations.
 **Note:** Use `{equation}` for the math problem and `{rules_channel}` to link to your rules channel in the translation strings.
 
 ---
 
-## 🎮 How to use (Admins)
+## How to use (Admins)
 
 1.  **Start the bot:** `python Bot.py`
 2.  **Configure the Verification Channel:**
@@ -88,7 +88,7 @@ You must create this file. The bot uses this to store your Token, Rules, and Tra
 
 ---
 
-## 👤 How it works (Users)
+## How it works (Users)
 
 1.  **Trigger:** User types variations of "I have read the rules".
     *   *Log:* Staff channel updates to "⏳ User is attempting verification..."
@@ -108,7 +108,7 @@ You must create this file. The bot uses this to store your Token, Rules, and Tra
 
 ---
 
-## 🐧 Hosting on Ubuntu (Systemd)
+## Hosting on Ubuntu (Systemd)
 
 To run the bot 24/7 in the background:
 
