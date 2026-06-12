@@ -2,7 +2,7 @@
 
 A highly configurable, multi-language Discord bot designed to secure your server. It forces users to prove they have read the rules by solving a math problem and copy-pasting the specific English rule text.
 
-It features **Regex pattern matching**, **Anti-Raid account age checks**, **Traffic Logging**, and **Fuzzy Text Matching**.
+It features **Regex pattern matching**, **Anti-Raid account age checks**, **Traffic Logging**, **Fuzzy Text Matching**, **Time Zone based timestamp generator**, and **Birthday announcements**.
 
 ## Key Features
 
@@ -28,6 +28,9 @@ It features **Regex pattern matching**, **Anti-Raid account age checks**, **Traf
 *   **Welcome System:** Sends a custom welcome message to a specific channel upon successful verification.
     *   **Custom Extras:** Admins can append extra text or links (like channel mentions) to the welcome message.
 
+### Time Zones Analysis
+* Users can send chats with date and time present in it and based on the user's timezone set by `/mytimezone`, the bot will convert it into the timestamp format.
+
 ---
 
 ## Prerequisites
@@ -42,7 +45,7 @@ It features **Regex pattern matching**, **Anti-Raid account age checks**, **Traf
 
 1.  **Install the library:**
     ```bash
-    pip install discord.py
+    pip install -r requirements.txt
     ```
 
 2.  **Create the bot file:**
@@ -79,11 +82,14 @@ You must create this file. The bot uses this to store your Token, Rules, and Tra
 6.  **Configure the Log Channel:**
     Go to your staff-only channel and type:
     `/set_log_channel`
-7.  **Set the Verified Role:**
+7.  **Configure the Birthday Channel:**
+    Go to the channel you want to announce birthdays and type:
+    `/set_birthday_channel`
+8.  **Set the Verified Role:**
     Type `/set_role role:@Member` (select the actual role).
-8.  **Verify Configuration:**
+9.  **Verify Configuration:**
     Type `/check_config` to see an overview of all settings.
-9.  **Hot Reload:**
+10.  **Hot Reload:**
     If you edit the JSON file (e.g., to add a language), type `/reload` to update the bot instantly.
 
 ---
