@@ -1,4 +1,4 @@
-# Sphere Matchers Verification & Utility Discord Bot
+# <img width="64" height="64" alt="server-icon" src="https://github.com/user-attachments/assets/d6ef083e-52c0-4eb5-b234-9e7d08d03ec2" /> Sphere Matchers Verification & Utility Discord Bot
 
 A highly configurable, multi-language Discord bot designed to secure your server. It forces users to prove they have read the rules by solving a math problem and copy-pasting the specific English rule text.
 
