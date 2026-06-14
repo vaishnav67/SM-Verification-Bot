@@ -327,10 +327,10 @@ async def handle_scam_match(message, attachment, matched_hash, distance, label):
     g_settings = config_data.get('guild_settings', {}).get(gid, {})
     log_channel_id = g_settings.get('log_channel_id')
     
-    ban_success = False
+    kick_success = False
     try:
-        await guild.ban(author, reason=f"Automated Ban: Compromised account posting scam layout ({label}).")
-        ban_success = True
+        await author.kick(reason=f"Automated Kick: Compromised account posting scam layout ({label}).")
+        kick_success = True
     except discord.Forbidden:
         pass
 
@@ -338,15 +338,15 @@ async def handle_scam_match(message, attachment, matched_hash, distance, label):
         log_channel = guild.get_channel(log_channel_id)
         if log_channel:
             embed = discord.Embed(
-                description=f"User {author.mention} was automatically banned for uploading a verified malicious scam image template.",
-                color=discord.Color.red(),
+                description=f"User {author.mention} was automatically kicked for uploading a verified malicious scam image template.",
+                color=discord.Color.orange(),
                 timestamp=datetime.now(timezone.utc)
             )
             embed.set_author(name="Compromised Account Handled", icon_url=author.display_avatar.url)
             embed.add_field(name="Username", value=f"`{author}`", inline=True)
             embed.add_field(name="User ID", value=f"`{author.id}`", inline=True)
             embed.add_field(name="Detected Layout", value=f"**{label}**", inline=True)
-            embed.add_field(name="Action Taken", value="⛔ **Banned**" if ban_success else "⚠️ **Failed to Ban (Missing Permissions)**", inline=False)
+            embed.add_field(name="Action Taken", value="👢 **Kicked**" if kick_success else "⚠️ **Failed to Kick (Missing Permissions)**", inline=False)
             embed.add_field(name="Filename Detected", value=f"`{attachment.filename}`", inline=True)
             embed.add_field(name="Match Confidence", value=f"**{(1 - distance/64)*100:.1f}%** (Dist: `{distance}/64`)", inline=True)
             
