@@ -1,8 +1,8 @@
-# SphereMatchers Verification Bot
+# Sphere Matchers Verification & Utility Discord Bot
 
 A highly configurable, multi-language Discord bot designed to secure your server. It forces users to prove they have read the rules by solving a math problem and copy-pasting the specific English rule text.
 
-It features **Regex pattern matching**, **Anti-Raid account age checks**, **Traffic Logging**, **Fuzzy Text Matching**, **Time Zone based timestamp generator**, and **Birthday announcements**.
+It mainly features **Regex pattern matching**, **Anti-Raid account age checks**, **Traffic Logging**, **Fuzzy Text Matching**, **Perceptual hashing (dHash) based image recognisation ban**, **Time Zone based timestamp generator**, and **Birthday announcements**.
 
 ## Key Features
 
@@ -11,6 +11,7 @@ It features **Regex pattern matching**, **Anti-Raid account age checks**, **Traf
 *   **Math Challenge:** Generates random integer-only equations (Addition, Subtraction, Multiplication, Division) using clear symbols (`×`, `÷`).
 *   **Fuzzy Rule Matching:** Users must copy-paste the English rule text, but the bot is forgiving of **punctuation, capitalization, and extra spaces**.
 *   **Anti-Raid / Account Age:** Automatically places accounts created less than **7 days** ago (configurable) into a **1-week Timeout**.
+*   **Perceptual Image Scan for ban**: Scans file attachments in real-time using Perceptual Difference Hashing (dHash). If a compromised account uploads a known scam image layout, the bot immediately deletes the message, bans the user, and posts a detailed match report in your logging channel. Thanks a lot MrBreast.
 
 ### Multi-Language Support
 *   **Dynamic Dropdowns:** Users select their language from a dropdown menu.
@@ -29,7 +30,7 @@ It features **Regex pattern matching**, **Anti-Raid account age checks**, **Traf
     *   **Custom Extras:** Admins can append extra text or links (like channel mentions) to the welcome message.
 
 ### Time Zones Analysis
-* Users can send chats with date and time present in it and based on the user's timezone set by `/mytimezone`, the bot will convert it into the timestamp format.
+* Users can send chats with date and time present in it and based on the user's timezone set by `/my_timezone`, the bot will convert it into the timestamp format.
 
 ---
 
@@ -91,6 +92,15 @@ You must create this file. The bot uses this to store your Token, Rules, and Tra
     Type `/check_config` to see an overview of all settings.
 10.  **Hot Reload:**
     If you edit the JSON file (e.g., to add a language), type `/reload` to update the bot instantly.
+11. **Register a Scam Image Layout (Anti-Scam):**
+    Upload a scam screenshot variant and type:
+    `/add_scam_template image_file:[file] label:MrBeast X Post Variant`
+12. **List Scam Templates:**
+    Check your active template layout database:
+    `/list_scam_templates`
+13. **Remove a Scam Layout:**
+    Delete a layout signature from tracking using its 16-character hex hash:
+    `/remove_scam_template scam_hash:1bd1593bebb3f298`
 
 ---
 

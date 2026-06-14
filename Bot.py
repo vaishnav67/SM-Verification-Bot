@@ -8,6 +8,8 @@ import sys
 import re
 import asyncio
 import difflib
+import io
+from PIL import Image
 from datetime import datetime, timedelta, timezone
 import dateparser
 import pytz
@@ -24,6 +26,10 @@ RULES = {}
 LANGUAGES_CONFIG = {}
 user_profiles = {}
 msg_translation_map = {} # Maps user_message_id -> bot_reply_message_id
+
+def save_config():
+    with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
+        json.dump(config_data, f, indent=4, ensure_ascii=False)
 
 def load_config():
     global config_data, TOKEN, MIN_AGE, RULES, LANGUAGES_CONFIG
@@ -51,6 +57,18 @@ def load_config():
     MIN_AGE = config_data.get('min_account_age_days', 7)
     RULES = config_data.get('rules', {})
     LANGUAGES_CONFIG = config_data.get('languages', {})
+    
+    # Initialize default template dictionary
+    default_signatures = {
+        "1bd1593bebb3f298": "MrBeast X post",
+        "1958cb09292b4b67": "Bonuses screen",
+        "0ceee5a474c0c1d0": "Withdrawal success modal",
+        "cacac75c785ccd98": "Smartphone transaction success"
+    }
+
+    if "scam_hashes" not in config_data:
+        config_data["scam_hashes"] = default_signatures
+        save_config()
     
     print(f"✅ Configuration loaded: {len(RULES)} rules, {len(LANGUAGES_CONFIG)} languages.")
     return True
@@ -225,7 +243,7 @@ def extract_and_parse_all(text):
             curr_start, curr_end = span
             
             gap = text[prev_end:curr_start].strip().lower()
-            
+
             prev_text = text[prev_start:prev_end]
             curr_text = text[curr_start:curr_end]
             
@@ -240,7 +258,7 @@ def extract_and_parse_all(text):
                 merged[-1][1] = max(prev_end, curr_end)
             else:
                 merged.append(span)
-                
+
     final_spans = []
     for span in merged:
         if not final_spans:
@@ -265,6 +283,76 @@ def add_to_translation_map(user_msg_id, bot_reply_id):
         oldest_key = next(iter(msg_translation_map))
         msg_translation_map.pop(oldest_key, None)
     msg_translation_map[user_msg_id] = bot_reply_id
+
+# --- DYNAMIC IMAGE DHASH MODERATION ---
+
+def bytes_dhash(img_bytes, hash_size=8):
+    try:
+        with Image.open(io.BytesIO(img_bytes)) as img:
+            img = img.convert('L').resize((hash_size + 1, hash_size), Image.Resampling.LANCZOS)
+            pixels = list(img.getdata())
+            
+            difference = []
+            for row in range(hash_size):
+                for col in range(hash_size):
+                    left = pixels[row * (hash_size + 1) + col]
+                    right = pixels[row * (hash_size + 1) + col + 1]
+                    difference.append(left > right)
+            
+            decimal_value = 0
+            hex_string = []
+            for index, value in enumerate(difference):
+                if value:
+                    decimal_value += 2 ** (index % 8)
+                if (index % 8) == 7:
+                    hex_string.append(hex(decimal_value)[2:].rjust(2, '0'))
+                    decimal_value = 0
+            return ''.join(hex_string)
+    except Exception:
+        return None
+
+def hamming_distance(hash1, hash2):
+    if len(hash1) != len(hash2):
+        return 999
+    return bin(int(hash1, 16) ^ int(hash2, 16)).count('1')
+
+async def handle_scam_match(message, attachment, matched_hash, distance, label):
+    try:
+        await message.delete()
+    except: pass
+
+    author = message.author
+    guild = message.guild
+    gid = str(guild.id)
+    g_settings = config_data.get('guild_settings', {}).get(gid, {})
+    log_channel_id = g_settings.get('log_channel_id')
+    
+    ban_success = False
+    try:
+        await guild.ban(author, reason=f"Automated Ban: Compromised account posting scam layout ({label}).")
+        ban_success = True
+    except discord.Forbidden:
+        pass
+
+    if log_channel_id:
+        log_channel = guild.get_channel(log_channel_id)
+        if log_channel:
+            embed = discord.Embed(
+                description=f"User {author.mention} was automatically banned for uploading a verified malicious scam image template.",
+                color=discord.Color.red(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            embed.set_author(name="Compromised Account Handled", icon_url=author.display_avatar.url)
+            embed.add_field(name="Username", value=f"`{author}`", inline=True)
+            embed.add_field(name="User ID", value=f"`{author.id}`", inline=True)
+            embed.add_field(name="Detected Layout", value=f"**{label}**", inline=True)
+            embed.add_field(name="Action Taken", value="⛔ **Banned**" if ban_success else "⚠️ **Failed to Ban (Missing Permissions)**", inline=False)
+            embed.add_field(name="Filename Detected", value=f"`{attachment.filename}`", inline=True)
+            embed.add_field(name="Match Confidence", value=f"**{(1 - distance/64)*100:.1f}%** (Dist: `{distance}/64`)", inline=True)
+            
+            try:
+                await log_channel.send(embed=embed)
+            except: pass
 
 # --- DYNAMIC MULTI-DROPDOWN LOGIC ---
 
@@ -481,10 +569,6 @@ async def on_ready():
         print(f"Failed sync: {e}")
     print(f'Logged in as {bot.user} (ID: {bot.user.id})')
 
-def save_config():
-    with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
-        json.dump(config_data, f, indent=4, ensure_ascii=False)
-
 # --- USER COMMANDS ---
 
 @bot.tree.command(name="my_timezone", description="Set your personal timezone for automatic time translation.")
@@ -569,6 +653,59 @@ async def my_birthday(interaction: discord.Interaction, month: app_commands.Choi
     await interaction.response.send_message(f"🎉 Saved! Your birthday is set to **{month.name} {day}**.", ephemeral=True)
 
 # --- ADMIN COMMANDS ---
+
+@bot.tree.command(name="add_scam_template", description="Register an image as a malicious scam template layout.")
+@app_commands.describe(
+    image_file="Upload the target scam image",
+    label="A descriptive label for this layout (e.g., 'X Post', 'Success screen variant')"
+)
+@app_commands.default_permissions(administrator=True)
+async def add_scam_template(interaction: discord.Interaction, image_file: discord.Attachment, label: str):
+    if not any(image_file.filename.lower().endswith(ext) for ext in ['.png', '.jpg', '.jpeg', '.webp']):
+        await interaction.response.send_message("❌ Uploaded file must be an image format (.png, .jpg, .jpeg, .webp).", ephemeral=True)
+        return
+        
+    await interaction.response.defer(ephemeral=True)
+    try:
+        img_bytes = await image_file.read()
+        h = bytes_dhash(img_bytes)
+        if h:
+            if "scam_hashes" not in config_data or isinstance(config_data["scam_hashes"], list):
+                config_data["scam_hashes"] = {}
+                
+            if h in config_data["scam_hashes"]:
+                await interaction.followup.send(f"⚠️ This exact layout is already registered as: **{config_data['scam_hashes'][h]}**", ephemeral=True)
+                return
+                
+            config_data["scam_hashes"][h] = label
+            save_config()
+            await interaction.followup.send(f"✅ Successfully registered scam layout template!\n\n• **Label**: {label}\n• **Hash**: `{h}`", ephemeral=True)
+        else:
+            await interaction.followup.send("❌ Failed to resolve image properties.", ephemeral=True)
+    except Exception as e:
+        await interaction.followup.send(f"❌ Error: {e}", ephemeral=True)
+
+@bot.tree.command(name="remove_scam_template", description="Remove a scam template layout hash from the tracking list.")
+@app_commands.describe(scam_hash="The exact 16-character hex hash of the template")
+@app_commands.default_permissions(administrator=True)
+async def remove_scam_template(interaction: discord.Interaction, scam_hash: str):
+    if "scam_hashes" in config_data and scam_hash in config_data["scam_hashes"]:
+        label = config_data["scam_hashes"].pop(scam_hash)
+        save_config()
+        await interaction.response.send_message(f"✅ Removed scam template: **{label}** (`{scam_hash}`)", ephemeral=True)
+    else:
+        await interaction.response.send_message("❌ Hash not found in the config database.", ephemeral=True)
+
+@bot.tree.command(name="list_scam_templates", description="List all registered scam template layout hashes.")
+@app_commands.default_permissions(administrator=True)
+async def list_scam_templates(interaction: discord.Interaction):
+    scam_hashes = config_data.get("scam_hashes", {})
+    if not scam_hashes:
+        await interaction.response.send_message("ℹ️ No scam templates are registered yet.", ephemeral=True)
+        return
+        
+    hash_list = "\n".join(f"• `{h}`: **{label}**" for h, label in scam_hashes.items())
+    await interaction.response.send_message(f"🔐 **Registered Scam Layout Templates ({len(scam_hashes)}):**\n{hash_list}", ephemeral=True)
 
 @bot.tree.command(name="set_birthday_channel", description="Set the channel where birthday announcements will be posted.")
 @app_commands.default_permissions(administrator=True)
@@ -709,7 +846,6 @@ async def on_message_edit(before, after):
     
     bot_reply_id = msg_translation_map.get(after.id)
 
-    # Process edited content
     parsed_segments = []
     if user_tz_name:
         parsed_segments = extract_and_parse_all(after.content)
@@ -760,7 +896,6 @@ async def on_message_edit(before, after):
                 add_to_translation_map(after.id, reply.id)
             except: pass
     else:
-        # If the edited content no longer contains dates, remove our old conversion translation
         if bot_reply_id:
             try:
                 msg = await after.channel.fetch_message(bot_reply_id)
@@ -772,6 +907,24 @@ async def on_message_edit(before, after):
 async def on_message(message):
     if message.author.bot: return
 
+    # 1. SCAN FOR MALICIOUS SCAM ATTACHMENTS
+    if message.attachments:
+        scam_hashes = config_data.get("scam_hashes", {})
+        if scam_hashes:
+            for attachment in message.attachments:
+                if any(attachment.filename.lower().endswith(ext) for ext in ['.png', '.jpg', '.jpeg', '.webp']):
+                    try:
+                        img_bytes = await attachment.read()
+                        h = bytes_dhash(img_bytes)
+                        if h:
+                            for template_hash, label in scam_hashes.items():
+                                dist = hamming_distance(h, template_hash)
+                                if dist <= 12: 
+                                    await handle_scam_match(message, attachment, h, dist, label)
+                                    return
+                    except Exception as e:
+                        print(f"❌ Error scanning attachment: {e}")
+
     g_settings = config_data.get('guild_settings', {}).get(str(message.guild.id), {})
     allowed_channel_id = g_settings.get('channel_id')
     welcome_channel_id = g_settings.get('welcome_channel_id')
@@ -779,7 +932,7 @@ async def on_message(message):
     verified_role_id = g_settings.get('role_id')
     welcome_extra = g_settings.get('welcome_extra', "")
 
-    # 1. TRIGGER
+    # 2. TRIGGER
     if VERIFY_PATTERN.fullmatch(message.content.strip()):
         if not allowed_channel_id or message.channel.id != allowed_channel_id: return
         try: await message.delete()
@@ -818,7 +971,7 @@ async def on_message(message):
         view.message = prompt_msg
         return
 
-    # 2. ANSWER CHECK
+    # 3. ANSWER CHECK
     if message.author.id in pending_verifications:
         if not allowed_channel_id or message.channel.id != allowed_channel_id: return
         try: await message.delete()
@@ -887,7 +1040,7 @@ async def on_message(message):
             )
             return
 
-    # 3. TIMEZONE TRANSLATION SYSTEM
+    # 4. TIMEZONE TRANSLATION SYSTEM
     is_verification_channel = (allowed_channel_id is not None) and (message.channel.id == allowed_channel_id)
     if not is_verification_channel:
         user_id_str = str(message.author.id)
