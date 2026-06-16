@@ -329,7 +329,16 @@ async def handle_scam_match(message, attachment, matched_hash, distance, label):
     
     kick_success = False
     try:
-        await author.kick(reason=f"Automated Kick: Compromised account posting scam layout ({label}).")
+        await guild.ban(
+            author, 
+            reason=f"Automated Softban: Compromised account posting scam layout ({label}).", 
+            delete_message_seconds=604800
+        )
+        
+        await guild.unban(
+            author, 
+            reason="Automated Softban: Immediate unban to keep action as a kick."
+        )
         kick_success = True
     except discord.Forbidden:
         pass
@@ -338,7 +347,7 @@ async def handle_scam_match(message, attachment, matched_hash, distance, label):
         log_channel = guild.get_channel(log_channel_id)
         if log_channel:
             embed = discord.Embed(
-                description=f"User {author.mention} was automatically kicked for uploading a verified malicious scam image template.",
+                description=f"User {author.mention} was automatically softbanned (kicked and message history wiped) for uploading a verified malicious scam image template.",
                 color=discord.Color.orange(),
                 timestamp=datetime.now(timezone.utc)
             )
@@ -346,7 +355,7 @@ async def handle_scam_match(message, attachment, matched_hash, distance, label):
             embed.add_field(name="Username", value=f"`{author}`", inline=True)
             embed.add_field(name="User ID", value=f"`{author.id}`", inline=True)
             embed.add_field(name="Detected Layout", value=f"**{label}**", inline=True)
-            embed.add_field(name="Action Taken", value="👢 **Kicked**" if kick_success else "⚠️ **Failed to Kick (Missing Permissions)**", inline=False)
+            embed.add_field(name="Action Taken", value="👢 **Softbanned**" if kick_success else "⚠️ **Failed to Softban (Missing Permissions)**", inline=False)
             embed.add_field(name="Filename Detected", value=f"`{attachment.filename}`", inline=True)
             embed.add_field(name="Match Confidence", value=f"**{(1 - distance/64)*100:.1f}%** (Dist: `{distance}/64`)", inline=True)
             
