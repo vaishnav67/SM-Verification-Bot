@@ -103,6 +103,7 @@ pending_verifications = {}
 
 # --- REGEXES ---
 VERIFY_PATTERN = re.compile(r"i( ha|'|)?ve read the rules( here)?(\.|!)?", re.IGNORECASE)
+BLOCKED_GENERIC = {"", ".*", ".+", ".", "^.*$", "^.+$"}
 
 TIME_RE = re.compile(
     r'\b(?:1[0-2]|0?[1-9])(?::[0-5][0-9])?\s*[aApP][mM]\b|' # Matches "10:30 AM", "10am", "3 pm"
@@ -579,7 +580,6 @@ async def on_ready():
     print(f'Logged in as {bot.user} (ID: {bot.user.id})')
 
 # --- USER COMMANDS ---
-
 @bot.tree.command(name="my_timezone", description="Set your personal timezone for automatic time translation.")
 @app_commands.describe(timezone="Select or type your timezone (e.g. America/New_York, UTC, CET)")
 async def mytimezone(interaction: discord.Interaction, timezone: str):
@@ -716,6 +716,69 @@ async def list_scam_templates(interaction: discord.Interaction):
     hash_list = "\n".join(f"• `{h}`: **{label}**" for h, label in scam_hashes.items())
     await interaction.response.send_message(f"🔐 **Registered Scam Layout Templates ({len(scam_hashes)}):**\n{hash_list}", ephemeral=True)
 
+@bot.tree.command(name="add_autokick_regex", description="Add a regex pattern to kick users on join if their username matches.")
+@app_commands.describe(pattern="The regex pattern to match usernames against")
+@app_commands.default_permissions(kick_members=True)
+async def add_autokick_regex(interaction: discord.Interaction, pattern: str):
+    try:
+        re.compile(pattern)
+    except re.error as e:
+        await interaction.response.send_message(f"❌ Invalid regex pattern: `{e}`", ephemeral=True)
+        return
+    
+    if pattern.strip() in BLOCKED_GENERIC:
+        await interaction.response.send_message("❌ This pattern is too broad and would kick all users.", ephemeral=True)
+        return
+
+    gid = str(interaction.guild_id)
+    if "guild_settings" not in config_data:
+        config_data["guild_settings"] = {}
+    if gid not in config_data["guild_settings"]:
+        config_data["guild_settings"][gid] = {}
+    if "autokick_regexes" not in config_data["guild_settings"][gid]:
+        config_data["guild_settings"][gid]["autokick_regexes"] = []
+
+    if pattern in config_data['guild_settings'][gid]["autokick_regexes"]:
+        await interaction.response.send_message(f"⚠️ Pattern `{pattern}` is already in the auto-kick list.", ephemeral=True)
+        return
+
+    config_data['guild_settings'][gid]["autokick_regexes"].append(pattern)
+    save_config()
+    await interaction.response.send_message(f"✅ Added pattern `{pattern}` to the auto-kick list.", ephemeral=True)
+
+@bot.tree.command(name="remove_autokick_regex", description="Remove a regex pattern from the auto-kick list.")
+@app_commands.describe(pattern="The regex pattern to remove")
+@app_commands.default_permissions(kick_members=True)
+async def remove_autokick_regex(interaction: discord.Interaction, pattern: str):
+    gid = str(interaction.guild_id)
+    patterns = config_data.get("guild_settings", {}).get(gid, {}).get("autokick_regexes", [])
+    
+    cleaned = pattern.strip()
+    if cleaned in patterns:
+        patterns.remove(cleaned)
+        save_config()
+        await interaction.response.send_message(f"✅ Removed pattern `{cleaned}` from the auto-kick list.", ephemeral=True)
+    else:
+        await interaction.response.send_message(f"❌ Pattern `{cleaned}` not found in this server's auto-kick list.", ephemeral=True)
+
+@bot.tree.command(name="list_autokick_regexes", description="View all auto-kick regex patterns for this server.")
+@app_commands.default_permissions(kick_members=True)
+async def list_autokick_regexes(interaction: discord.Interaction):
+    gid = str(interaction.guild_id)
+    patterns = config_data.get("guild_settings", {}).get(gid, {}).get("autokick_regexes", [])
+    
+    if not patterns:
+        await interaction.response.send_message("ℹ️ No auto-kick regex patterns configured for this server.", ephemeral=True)
+        return
+
+    patterns_text = "\n".join(f"{idx + 1}. `{pat}`" for idx, pat in enumerate(patterns))
+    embed = discord.Embed(
+        title=f"🛑 Server Auto-Kick Regex Patterns ({len(patterns)})",
+        description=patterns_text,
+        color=discord.Color.red()
+    )
+    await interaction.response.send_message(embed=embed, ephemeral=True)
+
 @bot.tree.command(name="set_birthday_channel", description="Set the channel where birthday announcements will be posted.")
 @app_commands.default_permissions(administrator=True)
 async def set_birthday_channel(interaction: discord.Interaction):
@@ -826,6 +889,7 @@ async def check_config(interaction: discord.Interaction):
     
     extra_txt = settings.get('welcome_extra')
     extra_status = f"📝 **Set:** \"{extra_txt[:50]}...\"" if extra_txt else "❌ Not Set"
+    autokick_count = len(settings.get("autokick_regexes", []))
 
     embed = discord.Embed(title="🔐 Verification Configuration", color=discord.Color.blue())
     embed.add_field(name="Verification Channel", value=v_chan, inline=True)
@@ -835,10 +899,64 @@ async def check_config(interaction: discord.Interaction):
     embed.add_field(name="Birthday Channel", value=b_chan, inline=True)
     embed.add_field(name="Verified Role", value=role_s, inline=True)
     embed.add_field(name="Welcome Extra Text", value=extra_status, inline=False)
+    embed.add_field(name="Auto-Kick Patterns", value=f"📋 `{autokick_count}` active regex pattern(s)", inline=False)
     
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
 # --- MAIN LOGIC ---
+def check_name_against_regexes(patterns, names):
+    for pattern in patterns:
+        try:
+            compiled = re.compile(pattern, re.IGNORECASE)
+            for name in names:
+                if compiled.search(name):
+                    return pattern
+        except re.error:
+            continue
+    return None
+
+@bot.event
+async def on_member_join(member):
+    gid = str(member.guild.id)
+    g_settings = config_data.get('guild_settings', {}).get(gid, {})
+    patterns = g_settings.get("autokick_regexes", [])
+    if not patterns:
+        return
+
+    names_to_check = [member.name]
+    if member.global_name:
+        names_to_check.append(member.global_name)
+
+    matched_pattern = await asyncio.to_thread(check_name_against_regexes, patterns, names_to_check)
+
+    if matched_pattern:
+        guild = member.guild
+        log_channel_id = g_settings.get('log_channel_id')
+
+        kick_success = False
+        try:
+            await member.kick(reason=f"Auto-kick regex matched: /{matched_pattern}/")
+            kick_success = True
+        except discord.Forbidden:
+            pass
+
+        if log_channel_id:
+            log_channel = guild.get_channel(log_channel_id)
+            if log_channel:
+                embed = discord.Embed(
+                    description=f"User {member.mention} was automatically kicked on join due to username match.",
+                    color=discord.Color.red(),
+                    timestamp=datetime.now(timezone.utc)
+                )
+                embed.set_author(name="Auto-Kick Triggered", icon_url=member.display_avatar.url)
+                embed.add_field(name="Username", value=f"`{member}`", inline=True)
+                embed.add_field(name="User ID", value=f"`{member.id}`", inline=True)
+                embed.add_field(name="Matched Pattern", value=f"`{matched_pattern}`", inline=False)
+                embed.add_field(name="Action Taken", value="👢 **Kicked**" if kick_success else "⚠️ **Failed to Kick (Missing Permissions)**", inline=False)
+                try:
+                    await log_channel.send(embed=embed)
+                except:
+                    pass
 
 @bot.event
 async def on_message_edit(before, after):

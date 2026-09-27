@@ -11,7 +11,8 @@ It mainly features **Regex pattern matching**, **Anti-Raid account age checks**,
 *   **Math Challenge:** Generates random integer-only equations (Addition, Subtraction, Multiplication, Division) using clear symbols (`×`, `÷`).
 *   **Fuzzy Rule Matching:** Users must copy-paste the English rule text, but the bot is forgiving of **punctuation, capitalization, and extra spaces**.
 *   **Anti-Raid / Account Age:** Automatically places accounts created less than **7 days** ago (configurable) into a **1-week Timeout**.
-*   **Perceptual Image Scan for ban**: Scans file attachments in real-time using Perceptual Difference Hashing (dHash). If a compromised account uploads a known scam image layout, the bot immediately deletes the message, bans the user, and posts a detailed match report in your logging channel. Thanks a lot MrBreast.
+*   **Perceptual Image Scan for ban:** Scans file attachments in real-time using Perceptual Difference Hashing (dHash). If a compromised account uploads a known scam image layout, the bot immediately deletes the message, bans the user, and posts a detailed match report in your logging channel. Thanks a lot MrBreast.
+*   **Auto-Kick using Regex:** Kick that one pesky alt account user by adding a regex of their name. 
 
 ### Multi-Language Support
 *   **Dynamic Dropdowns:** Users select their language from a dropdown menu.
@@ -101,6 +102,15 @@ You must create this file. The bot uses this to store your Token, Rules, and Tra
 13. **Remove a Scam Layout:**
     Delete a layout signature from tracking using its 16-character hex hash:
     `/remove_scam_template scam_hash:1bd1593bebb3f298`
+14. **Add an Auto-Kick Username Pattern:**
+    Kick new users on join whose username or display name matches a regex pattern:
+    `/add_autokick_regex pattern:aidanpierce.*?`
+15. **List Active Auto-Kick Patterns:**
+    View all active username regex patterns configured for the server:
+    `/list_autokick_regexes`
+16. **Remove an Auto-Kick Username Pattern:**
+    Remove a regex pattern from the auto-kick list:
+    `/remove_autokick_regex pattern:marcusholloway.*?`
 
 ---
 
