@@ -1,4 +1,4 @@
 discord.py>=2.7.1
 dateparser>=1.4.3
-pytz>=2026.4
+pytz>=2026.5
 Pillow>=12.3.0
